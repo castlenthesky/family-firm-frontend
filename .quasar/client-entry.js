@@ -152,9 +152,7 @@ createQuasarApp(createApp, quasarUserOptions)
 
     return Promise[ method ]([
       
-      import('boot/axios'),
-      
-      import('boot/firebase')
+      import('boot/services')
       
     ]).then(bootFiles => {
       const boot = mapFn(bootFiles).filter(entry => typeof entry === 'function')

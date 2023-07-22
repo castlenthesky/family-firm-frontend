@@ -10,7 +10,7 @@
         <q-separator dark inset />
 
         <q-card-section>
-          <VerticalBar />
+          {{ remoteData }}
         </q-card-section>
         <q-card-actions align="around">
           <q-btn flat>Action 1</q-btn>
@@ -22,6 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import ChartBar from 'components/charting/ChartHorizontalBar.vue';
-import VerticalBar from 'components/charting/ChartVerticalBar.vue';
+import { ref } from 'vue';
+
+const remoteData = ref({});
 </script>
