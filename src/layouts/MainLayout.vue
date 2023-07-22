@@ -103,6 +103,18 @@ const menuList = [
     separator: true,
   },
   {
+    icon: 'family_restroom',
+    path: '/members',
+    label: 'Family Members',
+    separator: false,
+  },
+  {
+    icon: 'price_change',
+    path: '/finances',
+    label: 'Budget',
+    separator: true,
+  },
+  {
     icon: 'person',
     path: '/register',
     label: 'Register',
@@ -119,12 +131,6 @@ const menuList = [
     path: '/login',
     label: 'Logout',
     separator: true,
-  },
-  {
-    icon: 'family_restroom',
-    path: '/members',
-    label: 'Family Members',
-    separator: false,
   },
   {
     icon: 'feedback',

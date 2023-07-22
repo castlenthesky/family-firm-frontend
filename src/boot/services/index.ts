@@ -1,4 +1,12 @@
 import axios from './axios/axios';
-import { firebaseAuth, db } from './firebase/firebase';
+import {
+  firebaseAuth,
+  db,
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  addDoc,
+} from './firebase/firebase';
 
-export { axios, firebaseAuth, db };
+export { axios, firebaseAuth, db, collection, doc, onSnapshot, setDoc, addDoc };

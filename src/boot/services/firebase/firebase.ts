@@ -1,12 +1,33 @@
-import { boot } from 'quasar/wrappers';
 import config from 'src/config';
 
-import { FirebaseApp, initializeApp } from 'firebase/app';
+import { initializeApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
-import { Firestore, getFirestore } from 'firebase/firestore/lite';
+import {
+  getFirestore,
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  addDoc,
+} from 'firebase/firestore';
 
-const firebaseApp: FirebaseApp = initializeApp(config.firebase.options);
+const firebaseApp = initializeApp(config.firebase.options);
 const firebaseAuth: Auth = getAuth(firebaseApp);
-const db: Firestore = getFirestore(firebaseApp);
+const db = getFirestore(firebaseApp);
 
-export { firebaseApp, firebaseAuth, db };
+// class Fire {
+//   public static firebaseApp = initializeApp(config.firebase.options);
+//   public static firebaseAuth = getAuth(this.firebaseApp);
+//   public static db = getFirestore(this.firebaseApp);
+// }
+
+export {
+  firebaseApp,
+  firebaseAuth,
+  db,
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  addDoc,
+};

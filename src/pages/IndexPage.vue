@@ -1,6 +1,6 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <div class="q-pa-md row items-start q-gutter-md">
+  <div class="row">
+    <div class="col-md-12">
       <q-card dark bordered class="bg-grey-9 my-card">
         <q-card-section>
           <div class="text-h6">Your Custom Data</div>
@@ -10,19 +10,48 @@
         <q-separator dark inset />
 
         <q-card-section>
+          <q-input v-model="newMemberName" label="Standard" />
+          Text to submit: {{ newMemberName }}
+          <br />
           {{ remoteData }}
         </q-card-section>
         <q-card-actions align="around">
-          <q-btn flat>Action 1</q-btn>
-          <q-btn flat>Action 2</q-btn>
+          <q-btn @click="refreshSnapshot" color="primary">Refresh</q-btn>
+          <q-btn @click="writeRecord" color="positive">Submit</q-btn>
         </q-card-actions>
       </q-card>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { db } from 'src/boot/services';
+import { collection, onSnapshot, doc, addDoc } from 'firebase/firestore';
 import { ref } from 'vue';
 
-const remoteData = ref({});
+const remoteData = ref();
+const newMemberName = ref();
+
+const unsubFamily = onSnapshot(
+  doc(db, 'families', 'RO7guHaddUaDB4Q0eOLS'),
+  (doc) => {
+    const source = doc.metadata.hasPendingWrites ? 'Local' : 'Server';
+    console.log(source, 'data: ', doc.data());
+    remoteData.value = doc.data();
+  }
+);
+
+const refreshSnapshot = () => {
+  unsubFamily();
+  onSnapshot(doc(db, 'families', 'RO7guHaddUaDB4Q0eOLS'), (doc) => {
+    const source = doc.metadata.hasPendingWrites ? 'Local' : 'Server';
+    console.log(source, 'data: ', doc.data());
+    remoteData.value = doc.data();
+  });
+};
+const writeRecord = () => {
+  addDoc(collection(db, 'categories'), {
+    name: newMemberName.value,
+  });
+};
 </script>
