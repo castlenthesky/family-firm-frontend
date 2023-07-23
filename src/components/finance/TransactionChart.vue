@@ -4,47 +4,40 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { db } from 'src/boot/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import * as d3 from 'd3';
 
-onMounted(() => {
-  const transactionData = ref([
-    {
-      date: '2023/07/19',
-      category: 'Drugs',
-      subcategory: 'Drug Den',
-      amount: 27.23,
-    },
-    { amount: 41.23, category: 'Entertainment', subcategory: 'Movies' },
-    {
-      date: '2023/07/17',
-      category: 'Education',
-      subcategory: 'Tuition',
-      amount: 17.22,
-    },
-    {
-      date: '2023/07/24',
-      category: 'Income',
-      subcategory: 'Salary 01',
-      amount: 7.29,
-    },
-    { amount: 75, subcategory: 'Bank Fees', category: 'Fees & Charges' },
-    { subcategory: 'Dog Wash', category: 'Pets', amount: 23.32 },
-  ]);
+const transactionData = ref([]);
 
-  const margin = {
+const chart = {
+  canvasHeight: 250,
+  canvasWidth: 600,
+  margin: {
     top: 20,
     right: 20,
-    bottom: 100,
+    bottom: 60,
     left: 100,
-  };
+  },
+};
 
-  const canvasWidth = 600;
-  const canvasHeight = 600;
+const update = (data) => {
+  // Update domain of scales
+};
 
-  const graphWidth = canvasWidth - margin.left - margin.right;
-  const graphHeight = canvasHeight - margin.top - margin.bottom;
+onMounted(async () => {
+  await getDocs(collection(db, 'transactions')).then((querySnapshot) => {
+    transactionData.value = [];
+    querySnapshot.forEach((doc) => {
+      transactionData.value.push(doc.data());
+    });
+  });
 
-  const y_min = d3.min(transactionData.value, (d) => d.amount);
+  const graphWidth = chart.canvasWidth - chart.margin.left - chart.margin.right;
+  const graphHeight =
+    chart.canvasHeight - chart.margin.top - chart.margin.bottom;
+
+  // const y_min = d3.min(transactionData.value, (d) => d.amount);
   const y_max = d3.max(transactionData.value, (d) => d.amount);
 
   const yScaler = d3.scaleLinear([0, y_max], [graphHeight, 0]);
@@ -58,14 +51,14 @@ onMounted(() => {
   let svg = d3
     .select('.canvas')
     .append('svg')
-    .attr('width', canvasWidth)
-    .attr('height', canvasHeight);
+    .attr('width', chart.canvasWidth)
+    .attr('height', chart.canvasHeight);
 
   const graph = svg
     .append('g') // Append a group
     .attr('width', graphWidth)
     .attr('height', graphHeight)
-    .attr('transform', `translate(${margin.left},${margin.top})`);
+    .attr('transform', `translate(${chart.margin.left},${chart.margin.top})`);
 
   const xAxisGroup = graph
     .append('g')
