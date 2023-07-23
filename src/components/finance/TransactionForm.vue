@@ -13,52 +13,69 @@
             autofocus
             @submit="onSubmit"
             @reset="onReset"
-            class="q-gutter-md"
+            class="q-gutter-md transaction-form"
           >
-            <q-date v-model="transaction.date" minimal />
-            <q-select
-              outlined
-              v-model="transaction.category"
-              :options="categoryOptions"
-              label="Transaction Category"
-              stack-label
-              dense
-              options-dense
-              ><template v-slot:prepend> <q-icon name="event" /> </template>
-              <template v-slot:append>
-                <q-icon
-                  name="close"
-                  @click.stop.prevent="transaction.category = null"
-                  class="cursor-pointer"
-                /> </template
-            ></q-select>
+            <div class="row form">
+              <div class="col-4">
+                <q-date v-model="transaction.date" minimal />
+              </div>
+              <div class="col-8">
+                <div class="row">
+                  <div class="col-12">
+                    <q-select
+                      outlined
+                      v-model="transaction.category"
+                      :options="categoryOptions"
+                      label="Transaction Category"
+                      stack-label
+                      hint=""
+                      dense
+                      options-dense
+                      ><template v-slot:prepend>
+                        <q-icon name="event" />
+                      </template>
+                      <template v-slot:append>
+                        <q-icon
+                          name="close"
+                          @click.stop.prevent="transaction.category = null"
+                          class="cursor-pointer"
+                        /> </template
+                    ></q-select>
+                  </div>
+                  <div class="col-12">
+                    <q-input
+                      outlined
+                      dense
+                      v-model="transaction.subcategory"
+                      label="Transaction Subcategory"
+                      lazy-rules
+                      :rules="[
+                        (val) =>
+                          (val && val.length > 0) ||
+                          'Please include a transaction subcategory',
+                      ]"
+                    />
+                  </div>
+                  <div class="col-12">
+                    <q-input
+                      outlined
+                      dense
+                      v-model.number="transaction.amount"
+                      label="Transaction Amount"
+                      lazy-rules
+                      prefix="$"
+                      placeholder="2.37"
+                      :rules="[
+                        (val) =>
+                          (typeof val == 'number' && val != 0) ||
+                          'Please include a transaction amount',
+                      ]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            <q-input
-              outlined
-              dense
-              v-model="transaction.subcategory"
-              label="Transaction Subcategory"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) ||
-                  'Please include a transaction subcategory',
-              ]"
-            />
-            <q-input
-              outlined
-              dense
-              v-model.number="transaction.amount"
-              label="Transaction Amount"
-              lazy-rules
-              prefix="$"
-              placeholder="2.37"
-              :rules="[
-                (val) =>
-                  (typeof val == 'number' && val != 0) ||
-                  'Please include a transaction amount',
-              ]"
-            />
             <div>
               <q-btn label="Submit" type="submit" color="primary" />
               <q-btn
@@ -182,3 +199,5 @@ const onSubmit = () => {
   }
 };
 </script>
+
+<style lang="sass"></style>
