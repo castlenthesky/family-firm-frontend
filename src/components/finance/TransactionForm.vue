@@ -87,11 +87,10 @@
               />
             </div>
           </q-form>
-          Transaction to submit: {{ transaction }}
-          <br />
-          {{ transactionList }}
-          <br />
         </q-card-section>
+        <div class="row">
+          <div class="col-12">Transaction to submit: {{ transaction }}</div>
+        </div>
         <q-card-section> Chart Goes Here </q-card-section>
       </q-card>
     </div>
@@ -101,17 +100,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { db } from 'src/boot/firebase';
-import {
-  query,
-  where,
-  collection,
-  onSnapshot,
-  addDoc,
-  DocumentData,
-} from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 
 const categoryOptions = ref<string[]>([]);
-const transactionList = ref<DocumentData[]>([]);
 
 // Add transaction to the transactions collection
 const transaction = ref({
@@ -121,50 +112,20 @@ const transaction = ref({
   amount: null,
 });
 
-// console.log(transaction.value.date);
-
 const addTransaction = () => {
   addDoc(collection(db, 'transactions'), transaction.value);
 };
 
-// query categorization schema from database
-const categoriesQuery = query(collection(db, 'categories'));
-
-onSnapshot(categoriesQuery, (querySnapshot) => {
+getDocs(collection(db, 'categories')).then((querySnapshot) => {
   categoryOptions.value = [];
   querySnapshot.forEach((doc) => {
     categoryOptions.value.push(doc.data().name);
   });
 });
 
-// Query transactions data from database
-const transactionQuery = query(
-  collection(db, 'transactions'),
-  where('amount', '!=', 0)
-);
-
-const unsubTransactions = onSnapshot(transactionQuery, (querySnapshot) => {
-  transactionList.value = [];
-  querySnapshot.forEach((doc) => {
-    transactionList.value.push(doc.data());
-  });
-  // console.log('Current transactions in list: ', transactionList.value.length);
-});
-
 // Form Handling
 const onReset = () => {
   console.log('form Reset button clicked');
-
-  // Purge snapshot data and reset Firebase connection
-  unsubTransactions();
-  transactionList.value = [];
-  onSnapshot(transactionQuery, (querySnapshot) => {
-    transactionList.value = [];
-    querySnapshot.forEach((doc) => {
-      transactionList.value.push(doc.data());
-    });
-    // console.log('Current transactions in list: ', transactionList.value.length);
-  });
 
   // Reset form inputs --> Leaving the date
   transaction.value.category = null;
@@ -180,22 +141,9 @@ const onSubmit = () => {
     transaction.value.amount == undefined
   ) {
     console.log('Form Data Invalid');
-    // $q.notify({
-    //   color: 'red-5',
-    //   textColor: 'white',
-    //   icon: 'warning',
-    //   message: 'You need to add some transaction details',
-    // });
   } else {
     addTransaction();
     onReset();
-
-    // $q.notify({
-    //   color: 'green-4',
-    //   textColor: 'white',
-    //   icon: 'cloud_done',
-    //   message: 'Submitted',
-    // });
   }
 };
 </script>

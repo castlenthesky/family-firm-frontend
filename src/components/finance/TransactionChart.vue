@@ -1,12 +1,20 @@
 <template>
   <div class="canvas"></div>
+  <div class="row">
+    {{ transactionData }}
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { db } from 'src/boot/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import * as d3 from 'd3';
+
+const svg = ref();
+const graph = ref();
+const xAxisGroup = ref();
+const yAxisGroup = ref();
 
 const transactionData = ref([]);
 
@@ -21,54 +29,36 @@ const chart = {
   },
 };
 
-const update = (data) => {
-  // Update domain of scales
-};
+const graphWidth = chart.canvasWidth - chart.margin.left - chart.margin.right;
+const graphHeight = chart.canvasHeight - chart.margin.top - chart.margin.bottom;
 
-onMounted(async () => {
-  await getDocs(collection(db, 'transactions')).then((querySnapshot) => {
-    transactionData.value = [];
-    querySnapshot.forEach((doc) => {
-      transactionData.value.push(doc.data());
-    });
-  });
+const yScaler = d3.scaleLinear().range([graphHeight, 0]);
+const xScaler = d3
+  .scaleBand()
+  .range([0, graphWidth])
+  .paddingInner(0.2)
+  .paddingOuter(0.2);
 
-  const graphWidth = chart.canvasWidth - chart.margin.left - chart.margin.right;
-  const graphHeight =
-    chart.canvasHeight - chart.margin.top - chart.margin.bottom;
-
-  // const y_min = d3.min(transactionData.value, (d) => d.amount);
+// ########################### Update Function ###########################
+const update = () => {
   const y_max = d3.max(transactionData.value, (d) => d.amount);
 
-  const yScaler = d3.scaleLinear([0, y_max], [graphHeight, 0]);
-  const xScaler = d3
-    .scaleBand()
-    .domain(transactionData.value.map((transaction) => transaction.category))
-    .range([0, graphWidth])
-    .paddingInner(0.2)
-    .paddingOuter(0.2);
+  console.log('Refreshing charts...');
 
-  let svg = d3
-    .select('.canvas')
-    .append('svg')
-    .attr('width', chart.canvasWidth)
-    .attr('height', chart.canvasHeight);
+  // 1. Recalibrate scale domains
+  yScaler.domain([0, y_max]);
+  xScaler.domain(
+    transactionData.value.map((transaction) => transaction.category)
+  );
 
-  const graph = svg
-    .append('g') // Append a group
-    .attr('width', graphWidth)
-    .attr('height', graphHeight)
-    .attr('transform', `translate(${chart.margin.left},${chart.margin.top})`);
+  // 2. Join updated data to elements
+  const dataBars = graph.value.selectAll('rect').data(transactionData.value);
+  console.log(dataBars);
 
-  const xAxisGroup = graph
-    .append('g')
-    .attr('transform', `translate(0,${graphHeight})`);
-  const yAxisGroup = graph.append('g');
+  // 3. Remove unwanted (if any) shapes using the exit selection
+  dataBars.exit().remove();
 
-  // join data to the rectangles
-  const dataBars = graph.selectAll('rect').data(transactionData.value);
-
-  // add attrs to circles already in the DOM
+  // 4. Update current shapes in the DOM
   dataBars
     .attr('fill', 'grey')
     .attr('width', xScaler.bandwidth())
@@ -76,7 +66,7 @@ onMounted(async () => {
     .attr('x', (d) => xScaler(d.category))
     .attr('y', (d) => yScaler(d.amount));
 
-  // append bars to the svg for new data
+  // 5. Apend the enter selection to the DOM
   dataBars
     .enter()
     .append('rect')
@@ -85,6 +75,11 @@ onMounted(async () => {
     .attr('height', (d) => graphHeight - yScaler(d.amount))
     .attr('x', (d) => xScaler(d.category))
     .attr('y', (d) => yScaler(d.amount));
+
+  const xAxisGroup = graph.value
+    .append('g')
+    .attr('transform', `translate(0,${graphHeight})`);
+  const yAxisGroup = graph.value.append('g');
 
   const xAxis = d3.axisBottom(xScaler);
   const yAxis = d3
@@ -99,5 +94,50 @@ onMounted(async () => {
     .selectAll('text')
     .attr('text-anchor', 'end')
     .attr('transform', 'rotate(-35)');
+};
+
+// ########################## Mounted  Function ###########################
+onMounted(async () => {
+  svg.value = d3
+    .select('.canvas')
+    .append('svg')
+    .attr('width', chart.canvasWidth)
+    .attr('height', chart.canvasHeight);
+
+  graph.value = svg.value
+    .append('g') // Append a group
+    .attr('width', graphWidth)
+    .attr('height', graphHeight)
+    .attr('transform', `translate(${chart.margin.left},${chart.margin.top})`);
+});
+
+onSnapshot(collection(db, 'transactions'), (response) => {
+  response.docChanges().forEach((change) => {
+    const docData = {
+      ...change.doc.data(),
+      id: change.doc.id,
+      index: change.newIndex,
+      oldIndex: change.type == 'added' ? null : change.oldIndex,
+    };
+
+    switch (change.type) {
+      case 'added':
+        transactionData.value.push(docData);
+        break;
+      case 'modified':
+        transactionData.value[docData.oldIndex] = docData;
+        break;
+      case 'removed':
+        transactionData.value = transactionData.value.filter(
+          (transaction) => transaction.index !== docData.oldIndex
+        );
+        break;
+      default:
+        break;
+    }
+  });
+
+  console.log('Updated data received...');
+  update(graph);
 });
 </script>
