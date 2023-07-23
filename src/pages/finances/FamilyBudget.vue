@@ -15,9 +15,14 @@
             @reset="onReset"
             class="q-gutter-md"
           >
+            <q-date
+              v-model="transaction.date"
+              @update:model-value="console.log(transaction.date)"
+              minimal
+            />
             <q-select
               outlined
-              v-model="transactionCategory"
+              v-model="transaction.category"
               :options="categoryOptions"
               label="Transaction Category"
               stack-label
@@ -27,14 +32,15 @@
               <template v-slot:append>
                 <q-icon
                   name="close"
-                  @click.stop.prevent="transactionCategory = ''"
+                  @click.stop.prevent="transaction.category = null"
                   class="cursor-pointer"
                 /> </template
             ></q-select>
 
             <q-input
               outlined
-              v-model="transactionSubcategory"
+              dense
+              v-model="transaction.subcategory"
               label="Transaction Subcategory"
               lazy-rules
               :rules="[
@@ -45,12 +51,16 @@
             />
             <q-input
               outlined
-              v-model="transactionAmount"
+              dense
+              v-model.number="transaction.amount"
               label="Transaction Amount"
               lazy-rules
+              prefix="$"
               placeholder="2.37"
               :rules="[
-                (val) => val != 0 || 'Please include a transaction amount',
+                (val) =>
+                  (typeof val == 'number' && val != 0) ||
+                  'Please include a transaction amount',
               ]"
             />
             <div>
@@ -87,23 +97,24 @@ import {
   DocumentData,
 } from 'firebase/firestore';
 
-const transactionCategory = ref();
-const transactionSubcategory = ref();
-const transactionAmount = ref();
-
 const categoryOptions = ref<string[]>([]);
 const transactionList = ref<DocumentData[]>([]);
 
+// Add transaction to the transactions collection
 const transaction = ref({
-  category: transactionCategory,
-  subcategory: transactionSubcategory,
-  amount: transactionAmount,
+  date: new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+  category: null,
+  subcategory: null,
+  amount: null,
 });
+
+console.log(transaction.value.date);
 
 const addTransaction = () => {
   addDoc(collection(db, 'transactions'), transaction.value);
 };
 
+// query categorization schema from database
 const categoriesQuery = query(collection(db, 'categories'));
 
 onSnapshot(categoriesQuery, (querySnapshot) => {
@@ -113,6 +124,7 @@ onSnapshot(categoriesQuery, (querySnapshot) => {
   });
 });
 
+// Query transactions data from database
 const transactionQuery = query(
   collection(db, 'transactions'),
   where('amount', '!=', 0)
@@ -132,6 +144,7 @@ const onReset = () => {
 
   // Purge snapshot data and reset Firebase connection
   unsubTransactions();
+  transactionList.value = [];
   onSnapshot(transactionQuery, (querySnapshot) => {
     transactionList.value = [];
     querySnapshot.forEach((doc) => {
@@ -140,18 +153,18 @@ const onReset = () => {
     console.log('Current transactions in list: ', transactionList.value.length);
   });
 
-  // Reset form inputs
-  transactionCategory.value = null;
-  transactionSubcategory.value = null;
-  transactionAmount.value = null;
+  // Reset form inputs --> Leaving the date
+  transaction.value.category = null;
+  transaction.value.subcategory = null;
+  transaction.value.amount = null;
 };
 
 const onSubmit = () => {
   console.log('form Submit button clicked');
   if (
-    transactionCategory.value == undefined ||
-    transactionSubcategory.value == undefined ||
-    transactionAmount.value == undefined
+    transaction.value.category == null ||
+    transaction.value.subcategory == undefined ||
+    transaction.value.amount == undefined
   ) {
     console.log('Form Data Invalid');
     // $q.notify({
