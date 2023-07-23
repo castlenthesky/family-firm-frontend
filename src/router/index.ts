@@ -14,7 +14,6 @@ const getCurrentUser = () => {
     const removeListener = onAuthStateChanged(
       getAuth(),
       (user) => {
-        console.log(user?.email);
         removeListener();
         resolve(user);
       },

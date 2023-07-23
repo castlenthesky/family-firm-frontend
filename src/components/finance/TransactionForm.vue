@@ -15,11 +15,7 @@
             @reset="onReset"
             class="q-gutter-md"
           >
-            <q-date
-              v-model="transaction.date"
-              @update:model-value="console.log(transaction.date)"
-              minimal
-            />
+            <q-date v-model="transaction.date" minimal />
             <q-select
               outlined
               v-model="transaction.category"
@@ -108,7 +104,7 @@ const transaction = ref({
   amount: null,
 });
 
-console.log(transaction.value.date);
+// console.log(transaction.value.date);
 
 const addTransaction = () => {
   addDoc(collection(db, 'transactions'), transaction.value);
@@ -135,7 +131,7 @@ const unsubTransactions = onSnapshot(transactionQuery, (querySnapshot) => {
   querySnapshot.forEach((doc) => {
     transactionList.value.push(doc.data());
   });
-  console.log('Current transactions in list: ', transactionList.value.length);
+  // console.log('Current transactions in list: ', transactionList.value.length);
 });
 
 // Form Handling
@@ -150,7 +146,7 @@ const onReset = () => {
     querySnapshot.forEach((doc) => {
       transactionList.value.push(doc.data());
     });
-    console.log('Current transactions in list: ', transactionList.value.length);
+    // console.log('Current transactions in list: ', transactionList.value.length);
   });
 
   // Reset form inputs --> Leaving the date

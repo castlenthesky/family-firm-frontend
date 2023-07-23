@@ -80,7 +80,7 @@ onMounted(() => {
     if (user) {
       isLoggedIn.value = true;
       currentUser.value = user.email || '';
-      console.log(`Currently logged in as ${currentUser.value}`);
+      // console.log(`Currently logged in as ${currentUser.value}`);
     } else {
       isLoggedIn.value = false;
       router.push('/login');
