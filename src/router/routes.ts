@@ -33,7 +33,21 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
+  // ######### Admin Routes #########
+  {
+    path: '/admin',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/admin/AdminUsers.vue'),
+        meta: {
+          icon: 'home',
+          separator: true,
+        },
+      },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

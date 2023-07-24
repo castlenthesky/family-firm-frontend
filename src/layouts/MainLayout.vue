@@ -133,9 +133,9 @@ const menuList = [
     separator: true,
   },
   {
-    icon: 'feedback',
-    path: '/',
-    label: 'Send Feedback',
+    icon: 'admin_panel_settings',
+    path: '/admin',
+    label: 'Admin',
     separator: false,
   },
   {
