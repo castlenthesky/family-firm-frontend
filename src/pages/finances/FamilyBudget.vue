@@ -5,5 +5,4 @@
 
 <script setup lang="ts">
 import TransactionForm from 'src/components/finance/TransactionForm.vue';
-import TransactionChart from 'src/components/finance/TransactionChart.vue';
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="canvas"></div>
   <div class="row">
-    {{ transactionData }}
+    <!-- {{ transactionData }} -->
   </div>
 </template>
 
@@ -15,6 +15,8 @@ const svg = ref();
 const graph = ref();
 const xAxisGroup = ref();
 const yAxisGroup = ref();
+const xAxis = ref();
+const yAxis = ref();
 
 const transactionData = ref([]);
 
@@ -39,6 +41,12 @@ const xScaler = d3
   .paddingInner(0.2)
   .paddingOuter(0.2);
 
+xAxis.value = d3.axisBottom(xScaler);
+yAxis.value = d3
+  .axisLeft(yScaler)
+  .ticks(10)
+  .tickFormat((d) => '$' + d);
+
 // ########################### Update Function ###########################
 const update = () => {
   const y_max = d3.max(transactionData.value, (d) => d.amount);
@@ -62,8 +70,12 @@ const update = () => {
   dataBars
     .attr('fill', 'grey')
     .attr('width', xScaler.bandwidth())
-    .attr('height', (d) => graphHeight - yScaler(d.amount))
+    // .attr('height', 0)
     .attr('x', (d) => xScaler(d.category))
+    // .attr('y', graphHeight)
+    .transition()
+    .duration(500)
+    .attr('height', (d) => graphHeight - yScaler(d.amount))
     .attr('y', (d) => yScaler(d.amount));
 
   // 5. Apend the enter selection to the DOM
@@ -72,25 +84,19 @@ const update = () => {
     .append('rect')
     .attr('fill', 'grey')
     .attr('width', xScaler.bandwidth())
-    .attr('height', (d) => graphHeight - yScaler(d.amount))
+    .attr('height', 0)
     .attr('x', (d) => xScaler(d.category))
+    .attr('y', graphHeight)
+    .transition()
+    .duration(500)
+    .attr('height', (d) => graphHeight - yScaler(d.amount))
     .attr('y', (d) => yScaler(d.amount));
 
-  const xAxisGroup = graph.value
-    .append('g')
-    .attr('transform', `translate(0,${graphHeight})`);
-  const yAxisGroup = graph.value.append('g');
+  // Call axies
+  xAxisGroup.value.call(xAxis.value);
+  yAxisGroup.value.call(yAxis.value);
 
-  const xAxis = d3.axisBottom(xScaler);
-  const yAxis = d3
-    .axisLeft(yScaler)
-    .ticks(10)
-    .tickFormat((d) => '$' + d);
-
-  xAxisGroup.call(xAxis);
-  yAxisGroup.call(yAxis);
-
-  xAxisGroup
+  xAxisGroup.value
     .selectAll('text')
     .attr('text-anchor', 'end')
     .attr('transform', 'rotate(-35)');
@@ -109,6 +115,11 @@ onMounted(async () => {
     .attr('width', graphWidth)
     .attr('height', graphHeight)
     .attr('transform', `translate(${chart.margin.left},${chart.margin.top})`);
+
+  xAxisGroup.value = graph.value
+    .append('g')
+    .attr('transform', `translate(0,${graphHeight})`);
+  yAxisGroup.value = graph.value.append('g');
 });
 
 onSnapshot(collection(db, 'transactions'), (response) => {
@@ -138,6 +149,6 @@ onSnapshot(collection(db, 'transactions'), (response) => {
   });
 
   console.log('Updated data received...');
-  update(graph);
+  update();
 });
 </script>
