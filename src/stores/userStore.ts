@@ -1,5 +1,5 @@
-import { DocumentData } from 'firebase/firestore';
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { DocumentData } from 'firebase/firestore';
 import { getUserData } from 'src/services/users';
 
 const defaultState = {
@@ -22,10 +22,14 @@ export const useUserStore = defineStore('user', {
       this.name = userData.name;
       this.access = userData.access;
       this.membership = userData.membership;
+      console.log('Logged in as:', this.email);
     },
 
-    resetState() {
-      Object.assign(this, defaultState);
+    logout() {
+      this.email = null;
+      this.name = {};
+      this.access = [];
+      this.membership = [];
     },
   },
 });

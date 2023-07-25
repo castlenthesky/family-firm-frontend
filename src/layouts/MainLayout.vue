@@ -14,7 +14,9 @@
         <q-toolbar-title><strong>Family</strong>Firm </q-toolbar-title>
 
         <div>
-          <q-btn color="black" @click="handleSignOut">{{ currentUser }}</q-btn>
+          <q-btn color="black" @click="signOut()">
+            {{ user.email }}
+          </q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -63,38 +65,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { getAuth, onAuthStateChanged, signOut, Auth } from '@firebase/auth';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { signOut } from 'src/services/users';
+import { useUserStore } from 'src/stores';
 
-const router = useRouter();
+const user = useUserStore();
 const activeLink = ref('Home');
 
-const isLoggedIn = ref(false);
-const currentUser = ref('');
-let auth: Auth;
-
-onMounted(() => {
-  auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      isLoggedIn.value = true;
-      currentUser.value = user.email || '';
-      // console.log(`Currently logged in as ${currentUser.value}`);
-    } else {
-      isLoggedIn.value = false;
-      router.push('/login');
-    }
-  });
-});
-
-const handleSignOut = () => {
-  signOut(auth).then(() => {
-    console.log('logged out.');
-    router.push('/login');
-  });
-  return;
-};
 const menuList = [
   {
     icon: 'home',
@@ -104,7 +81,7 @@ const menuList = [
   },
   {
     icon: 'family_restroom',
-    path: '/members',
+    path: '/families',
     label: 'Family Members',
     separator: false,
   },

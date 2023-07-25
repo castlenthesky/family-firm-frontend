@@ -1,6 +1,5 @@
 <template>
   <TransactionForm />
-  <TransactionChart />
 </template>
 
 <script setup lang="ts">

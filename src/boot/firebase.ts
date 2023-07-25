@@ -15,12 +15,6 @@ const firebaseApp = initializeApp(config.firebase.options);
 const firebaseAuth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
-// class Fire {
-//   public static firebaseApp = initializeApp(config.firebase.options);
-//   public static firebaseAuth = getAuth(this.firebaseApp);
-//   public static db = getFirestore(this.firebaseApp);
-// }
-
 export {
   firebaseApp,
   firebaseAuth,

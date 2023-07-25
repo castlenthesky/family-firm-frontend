@@ -9,8 +9,21 @@ const routes: RouteRecordRaw[] = [
         path: '',
         component: () => import('pages/IndexPage.vue'),
         meta: {
+          is_nav: true,
+          caption: 'Home',
           icon: 'home',
           separator: true,
+        },
+      },
+      {
+        path: '/families',
+        component: () => import('pages/families/FamiliesHome.vue'),
+        meta: {
+          is_nav: true,
+          requiresAuth: true,
+          caption: 'Families',
+          icon: 'family',
+          separator: false,
         },
       },
       // Members Area
@@ -44,10 +57,12 @@ const routes: RouteRecordRaw[] = [
         meta: {
           icon: 'home',
           separator: true,
+          requiresAuth: true,
         },
       },
     ],
   },
+
   // Always leave this as last one,
   // but you can also remove it
   {

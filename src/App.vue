@@ -10,11 +10,9 @@ const user = useUserStore();
 
 firebaseAuth.onAuthStateChanged((authUser) => {
   if (authUser && authUser.email) {
-    console.log('Logged in as:', authUser.email);
     user.getUserData(authUser.email);
   } else {
-    console.log('User logged out');
-    user.resetState();
+    user.logout();
   }
 });
 </script>
