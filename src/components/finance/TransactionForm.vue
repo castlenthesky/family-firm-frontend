@@ -130,7 +130,13 @@
 import TransactionChart from './TransactionChart.vue';
 import { ref } from 'vue';
 import { db } from 'src/boot/firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import {
+  query,
+  collection,
+  getDocs,
+  addDoc,
+  orderBy,
+} from 'firebase/firestore';
 
 const currentDate = () => {
   const currentTimestamp = new Date();
@@ -152,10 +158,13 @@ const addTransaction = () => {
   addDoc(collection(db, 'transactions'), transaction.value);
 };
 
-getDocs(collection(db, 'categories')).then((querySnapshot) => {
+const categoriesRef = collection(db, 'categories');
+const categoriesQuery = query(categoriesRef, orderBy('sort', 'asc'));
+
+getDocs(categoriesQuery).then((querySnapshot) => {
   categoryOptions.value = [];
   querySnapshot.forEach((doc) => {
-    categoryOptions.value.push(doc.data().name);
+    categoryOptions.value.push(doc.id);
   });
 });
 
