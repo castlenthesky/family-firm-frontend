@@ -12,7 +12,7 @@ firebaseAuth.onAuthStateChanged((authUser) => {
   if (authUser && authUser.email) {
     user.getUserData(authUser.email);
   } else {
-    user.logout();
+    user.resetStore();
   }
 });
 </script>

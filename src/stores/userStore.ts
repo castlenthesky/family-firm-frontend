@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { firebaseAuth } from 'src/boot/firebase';
 import { DocumentData } from 'firebase/firestore';
 import { getUserData } from 'src/services/users';
 
@@ -25,11 +26,16 @@ export const useUserStore = defineStore('user', {
       console.log('Logged in as:', this.email);
     },
 
-    logout() {
+    resetStore() {
       this.email = null;
       this.name = {};
       this.access = [];
       this.membership = [];
+    },
+
+    logout() {
+      firebaseAuth.signOut();
+      window.location.href = '/login';
     },
   },
 });
