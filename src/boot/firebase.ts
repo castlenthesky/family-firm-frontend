@@ -1,7 +1,7 @@
 import config from 'src/config';
 
 import { initializeApp } from 'firebase/app';
-import { Auth, getAuth } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import {
   getFirestore,
   collection,
@@ -12,7 +12,7 @@ import {
 } from 'firebase/firestore';
 
 const firebaseApp = initializeApp(config.firebase.options);
-const firebaseAuth: Auth = getAuth(firebaseApp);
+const firebaseAuth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 // class Fire {

@@ -15,8 +15,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from 'src/stores/userStore';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { db } from 'src/boot/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { getUserData } from 'src/services/users';
 
 const user = useUserStore();
 const router = useRouter();
@@ -28,9 +27,9 @@ const errorMessage = ref('');
 const login = () => {
   signInWithEmailAndPassword(getAuth(), email.value, password.value)
     .then(async () => {
-      const docSnap = await getDoc(doc(db, 'users', email.value));
-      if (docSnap.exists()) {
-        user.setUserData(docSnap.data());
+      const docSnap = await getUserData(email.value);
+      if (docSnap) {
+        user.setUserData(docSnap);
         return router.push('/');
       } else {
         return router.push('/login');
@@ -46,10 +45,6 @@ const login = () => {
           break;
       }
     });
-  return;
-};
-
-const signInWithGoogle = () => {
   return;
 };
 </script>

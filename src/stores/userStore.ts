@@ -1,20 +1,31 @@
 import { DocumentData } from 'firebase/firestore';
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { getUserData } from 'src/services/users';
+
+const defaultState = {
+  email: null,
+  name: {},
+  access: [],
+  membership: [],
+};
 
 export const useUserStore = defineStore('user', {
-  state: () => ({
-    email: {},
-    name: {},
-    access: [],
-    membership: [],
-  }),
+  state: () => defaultState,
   getters: {},
   actions: {
-    setUserData(userData: DocumentData) {
+    getUserData: (userEmail: string) => {
+      useUserStore().setUserData(getUserData(userEmail));
+    },
+
+    async setUserData(userData: DocumentData) {
       this.email = userData.email;
       this.name = userData.name;
       this.access = userData.access;
       this.membership = userData.membership;
+    },
+
+    resetState() {
+      Object.assign(this, defaultState);
     },
   },
 });
