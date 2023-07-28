@@ -14,8 +14,21 @@ export const useUserStore = defineStore('user', {
   state: () => defaultState,
   getters: {},
   actions: {
-    getUserData: (userEmail: string) => {
-      useUserStore().setUserData(getUserData(userEmail));
+    userLogin() {
+      console.log('User Logging In...');
+    },
+
+    async getUserData(userEmail: string) {
+      const databaseResponse = await getUserData(userEmail);
+      if (!this.email && databaseResponse) {
+        this.email = databaseResponse.email;
+        this.name = databaseResponse.name;
+        this.access = databaseResponse.access;
+        this.membership = databaseResponse.membership;
+        console.log('Logged in as:', this.email);
+      } else {
+        return;
+      }
     },
 
     async setUserData(userData: DocumentData) {

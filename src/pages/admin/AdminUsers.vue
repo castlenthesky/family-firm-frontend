@@ -10,7 +10,7 @@ onSnapshot(
   collection(db, 'families', 'henson', 'transactions'),
   (documentData) => {
     documentData.forEach((user) => {
-      console.log(user.data());
+      // console.log(user.data());
     });
   }
 );

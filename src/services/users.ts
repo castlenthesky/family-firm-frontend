@@ -16,7 +16,8 @@ export async function signIn(user: { email: string; password: string }) {
   await signInWithEmailAndPassword(getAuth(), user.email, user.password);
   const databaseRecord = await getUserData(user.email);
   if (databaseRecord && databaseRecord.email == user.email) {
-    console.log(databaseRecord.email, user.email);
+    // console.log(databaseRecord.email, user.email);
+    // userStore.setUserData(databaseRecord);
     window.location.href = '/';
   } else {
     window.location.href = '/login';

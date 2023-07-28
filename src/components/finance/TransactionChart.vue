@@ -61,7 +61,7 @@ const update = () => {
 
   // 2. Join updated data to elements
   const dataBars = graph.value.selectAll('rect').data(transactionData.value);
-  console.log(dataBars);
+  // console.log(dataBars);
 
   // 3. Remove unwanted (if any) shapes using the exit selection
   dataBars.exit().remove();
