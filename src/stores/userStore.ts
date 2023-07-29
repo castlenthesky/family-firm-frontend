@@ -5,19 +5,18 @@ import { useRouter } from 'vue-router';
 
 import { getUserData } from 'src/services/users';
 import { firebaseAuth } from 'src/boot/firebase';
-// import { useFamilyStore } from './familiyStore';
-
-// const familyStore = useFamilyStore();
+import { useFamilyStore } from './familyStore';
 
 export const useUserStore = defineStore('user', () => {
   const router = useRouter();
+  const familyStore = useFamilyStore();
 
   // State
   const userAuth = ref<string>('');
   const userEmail = ref<string>('');
   const userName = ref<string>('');
   const userAccess = ref<string[]>();
-  const userMembership = ref<string[]>();
+  const userMembership = ref();
   const userActiveFamily = ref({ id: '', name: '' });
 
   // Getters / Computed
@@ -36,6 +35,13 @@ export const useUserStore = defineStore('user', () => {
     if (databaseRecord && databaseRecord.email == userData.email) {
       await setUserAuth(userData.email);
       await setUserData(userData.email);
+      if (userMembership.value && userMembership.value.length == 1) {
+        const offset = userMembership.value[0]._key.path.offset + 1;
+        console.log();
+        await familyStore.getActiveFamilyData(
+          userMembership.value[0]._key.path.segments[offset]
+        );
+      }
       router.push('/');
     } else {
       userAuth.value = '';
