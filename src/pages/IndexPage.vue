@@ -11,8 +11,6 @@
     {{ family }}
   </q-btn>
   <p>Active Family: {{ activeFamily }}</p>
-
-  <p>All Family: {{ familyList }}</p>
 </template>
 
 <script setup lang="ts">

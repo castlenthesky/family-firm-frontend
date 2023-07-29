@@ -1,14 +1,27 @@
 import { computed, ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { getUserFamilies } from 'src/services/families';
 
 export const useFamilyStore = defineStore('family', () => {
-  const familyName = ref('');
-  const nameLength = computed(() => familyName.value.length);
-  function getName() {
-    return familyName.value;
+  // State
+  const availableFamilyList = ref<string[]>([]);
+  const activeFamily = ref();
+
+  // Getters
+  const availableFamilyCount = computed(() => availableFamilyList.value.length);
+
+  // Actions
+  async function getAvailableFamilyList(userEmail: string) {
+    availableFamilyList.value = await getUserFamilies(userEmail);
+    return availableFamilyList.value;
   }
 
-  return { familyName, nameLength, getName };
+  return {
+    availableFamilyList,
+    activeFamily,
+    availableFamilyCount,
+    getAvailableFamilyList,
+  };
 });
 
 if (import.meta.hot) {

@@ -15,7 +15,7 @@
 
         <div>
           <q-btn color="black" @click="signOut()">
-            {{ user.email }}
+            {{ user.userEmail }}
           </q-btn>
         </div>
       </q-toolbar>

@@ -1,57 +1,80 @@
+import { computed, ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { firebaseAuth } from 'src/boot/firebase';
-import { DocumentData } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'vue-router';
+
 import { getUserData } from 'src/services/users';
+import { firebaseAuth } from 'src/boot/firebase';
+// import { useFamilyStore } from './familiyStore';
 
-const defaultState = {
-  authUser: '',
-  email: null,
-  name: {},
-  access: [],
-  membership: [],
-};
+// const familyStore = useFamilyStore();
 
-export const useUserStore = defineStore('user', {
-  state: () => defaultState,
-  getters: {},
-  actions: {
-    userLogin() {
-      console.log('User Logging In...');
-    },
+export const useUserStore = defineStore('user', () => {
+  const router = useRouter();
 
-    async getUserData(userEmail: string) {
-      const databaseResponse = await getUserData(userEmail);
-      if (!this.email && databaseResponse) {
-        this.email = databaseResponse.email;
-        this.name = databaseResponse.name;
-        this.access = databaseResponse.access;
-        this.membership = databaseResponse.membership;
-        console.log('Logged in as:', this.email);
-      } else {
-        return;
-      }
-    },
+  // State
+  const userAuth = ref<string>();
+  const userEmail = ref<string>();
+  const userName = ref<string>();
+  const userAccess = ref<string[]>();
+  const userMembership = ref<string[]>();
 
-    async setUserData(userData: DocumentData) {
-      this.email = userData.email;
-      this.name = userData.name;
-      this.access = userData.access;
-      this.membership = userData.membership;
-      console.log('Logged in as:', this.email);
-    },
+  // Getters / Computed
+  // const userAge = computed(() => 1 + 1);
 
-    resetStore() {
-      this.email = null;
-      this.name = {};
-      this.access = [];
-      this.membership = [];
-    },
+  // Actions
+  const signIn = async (userData: { email: string; password: string }) => {
+    await signInWithEmailAndPassword(
+      getAuth(),
+      userData.email,
+      userData.password
+    );
 
-    logout() {
-      firebaseAuth.signOut();
-      window.location.href = '/login';
-    },
-  },
+    const databaseRecord = await getUserData(userData.email);
+
+    if (databaseRecord && databaseRecord.email == userData.email) {
+      await setUserAuth(userData.email);
+      await setUserData(userData.email);
+      router.push('/');
+    } else {
+      userAuth.value = '';
+      router.push('/login');
+    }
+  };
+
+  async function signOut() {
+    await firebaseAuth.signOut();
+    userAuth.value = '';
+    userEmail.value = '';
+    router.push('/login');
+  }
+
+  async function setUserAuth(authEmail: string) {
+    userAuth.value = authEmail;
+  }
+
+  async function setUserData(emailInput: string) {
+    const databaseResponse = await getUserData(emailInput);
+    if (databaseResponse) {
+      userEmail.value = databaseResponse.email;
+      userName.value = databaseResponse.name;
+      userAccess.value = databaseResponse.access;
+      userMembership.value = databaseResponse.membership;
+      console.log('Logged in as:', userEmail.value);
+    } else {
+      return;
+    }
+  }
+
+  return {
+    signIn,
+    signOut,
+    userAuth,
+    userEmail,
+    userName,
+    userAccess,
+    userMembership,
+  };
 });
 
 if (import.meta.hot) {

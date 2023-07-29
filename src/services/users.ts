@@ -27,7 +27,5 @@ export async function signIn(userData: { email: string; password: string }) {
 }
 
 export async function signOut() {
-  await firebaseAuth.signOut().then(() => {
-    window.location.href = '/login';
-  });
+  return await firebaseAuth.signOut();
 }

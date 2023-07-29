@@ -11,7 +11,7 @@
     </p>
     <p v-if="errorMessage">{{ errorMessage }}</p>
     <p>
-      <button @click="signIn(userInputs)">Submit</button>
+      <button @click="user.signIn(userInputs)">Submit</button>
     </p>
     <hr />
     <p><a href="/register">Click here to register</a></p>
@@ -20,7 +20,10 @@
 
 <script setup>
 import { ref } from 'vue';
-import { signIn } from 'src/services/users';
+// import { signIn } from 'src/services/users';
+import { useUserStore } from 'src/stores';
+
+const user = useUserStore();
 
 const userInputs = ref({
   email: '',

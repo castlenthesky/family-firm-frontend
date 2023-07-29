@@ -12,9 +12,9 @@ const user = useUserStore();
 onBeforeMount(async () => {
   firebaseAuth.onAuthStateChanged((authUser) => {
     if (authUser && authUser.email) {
-      user.getUserData(authUser.email);
+      return;
     } else {
-      user.resetStore();
+      user.signOut();
     }
   });
 });
