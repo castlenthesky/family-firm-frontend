@@ -4,6 +4,7 @@ import { DocumentData } from 'firebase/firestore';
 import { getUserData } from 'src/services/users';
 
 const defaultState = {
+  authUser: '',
   email: null,
   name: {},
   access: [],

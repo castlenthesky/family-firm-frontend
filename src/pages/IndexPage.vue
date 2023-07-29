@@ -4,37 +4,34 @@
   <q-btn
     v-model="activeFamily"
     v-for="family in familyList"
-    :key="family.id"
-    :value="family.name"
+    :key="family"
+    :value="family"
+    @click="setActiveFamily(family)"
   >
-    {{ family.name }}
+    {{ family }}
   </q-btn>
   <p>Active Family: {{ activeFamily }}</p>
 
-  <p>{{ familyList }}</p>
+  <p>All Family: {{ familyList }}</p>
 </template>
 
 <script setup lang="ts">
-import { db, firebaseAuth } from 'src/boot/firebase';
-import { collection, getDoc, getDocs, query, where } from 'firebase/firestore';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
+import { getUserFamilies } from 'src/services/families';
+import { getAuth } from 'firebase/auth';
 
-const familyList = ref<any>([]);
+const familyList = ref<string[]>();
 const activeFamily = ref();
 
-const q = query(
-  collection(db, 'families'),
-  where('members', 'array-contains-any', [
-    firebaseAuth.currentUser?.email || 'nobody',
-  ])
-);
+function setActiveFamily(familyName: string) {
+  activeFamily.value = familyName;
+}
 
-getDocs(q).then((querySnapshot) => {
-  querySnapshot.forEach((doc) => {
-    const familyData = doc.data();
-    familyList.value.push(familyData);
+onBeforeMount(async () => {
+  getAuth().onAuthStateChanged(async (user) => {
+    if (user && user.email) {
+      familyList.value = await getUserFamilies(user.email);
+    }
   });
 });
-
-// getDoc(doc(collection(db, 'families'),)
 </script>
