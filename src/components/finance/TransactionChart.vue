@@ -122,7 +122,7 @@ onMounted(async () => {
   yAxisGroup.value = graph.value.append('g');
 });
 
-onSnapshot(collection(db, 'transactions'), (response) => {
+onSnapshot(collection(db, 'families', 'henson', 'transactions'), (response) => {
   response.docChanges().forEach((change) => {
     const docData = {
       ...change.doc.data(),

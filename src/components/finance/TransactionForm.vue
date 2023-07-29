@@ -138,13 +138,14 @@ import {
   orderBy,
 } from 'firebase/firestore';
 
+const categoryOptions = ref<string[]>([]);
+
 const currentDate = () => {
   const currentTimestamp = new Date();
   const offset = currentTimestamp.getTimezoneOffset();
   const today = new Date(currentTimestamp.getTime() - offset * 60 * 1000);
   return today.toISOString().split('T')[0].replace(/-/g, '/');
 };
-const categoryOptions = ref<string[]>([]);
 
 // Add transaction to the transactions collection
 const transaction = ref({
@@ -155,11 +156,16 @@ const transaction = ref({
 });
 
 const addTransaction = () => {
-  addDoc(collection(db, 'transactions'), transaction.value);
+  addDoc(
+    collection(db, 'families', 'henson', 'transactions'),
+    transaction.value
+  );
 };
 
-const categoriesRef = collection(db, 'categories');
-const categoriesQuery = query(categoriesRef, orderBy('sort', 'asc'));
+const categoriesQuery = query(
+  collection(db, 'categories'),
+  orderBy('sort', 'asc')
+);
 
 getDocs(categoriesQuery).then((querySnapshot) => {
   categoryOptions.value = [];
