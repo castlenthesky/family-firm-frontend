@@ -1,5 +1,12 @@
 import { db } from 'src/boot/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  getDoc,
+  query,
+  where,
+  doc,
+} from 'firebase/firestore';
 
 const familiesCollection = 'families';
 
@@ -8,7 +15,7 @@ export async function getAllFamilies() {
 }
 
 export async function getUserFamilies(userEmail: string) {
-  const userFamilies: string[] = [];
+  const userFamilies: { id: string; name: string }[] = [];
 
   const userFamiliesQuery = query(
     collection(db, 'families'),
@@ -16,16 +23,15 @@ export async function getUserFamilies(userEmail: string) {
   );
   const userFamilySnapshot = await getDocs(userFamiliesQuery);
   userFamilySnapshot.forEach((familyDoc) => {
-    userFamilies.push(familyDoc.data().name);
+    userFamilies.push({
+      id: familyDoc.id,
+      name: familyDoc.data().name,
+    });
   });
 
   return userFamilies;
 }
 
-export async function getfamilyByName(familyName: string) {
-  const familyQuery = query(
-    collection(db, familiesCollection),
-    where('name', '==', familyName)
-  );
-  return await getDocs(familyQuery);
+export async function getfamilyById(familyId: string) {
+  return (await getDoc(doc(collection(db, 'families'), familyId))).data();
 }

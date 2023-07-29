@@ -1,10 +1,10 @@
 import { computed, ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { getUserFamilies } from 'src/services/families';
+import { getfamilyById, getUserFamilies } from 'src/services/families';
 
 export const useFamilyStore = defineStore('family', () => {
   // State
-  const availableFamilyList = ref<string[]>([]);
+  const availableFamilyList = ref<{ id: string; name: string }[]>([]);
   const activeFamily = ref();
 
   // Getters
@@ -16,11 +16,18 @@ export const useFamilyStore = defineStore('family', () => {
     return availableFamilyList.value;
   }
 
+  async function getActiveFamilyData(familyId: string) {
+    activeFamily.value = await getfamilyById(familyId);
+  }
+
+  // async function setActiveFamily(family)
+
   return {
     availableFamilyList,
     activeFamily,
     availableFamilyCount,
     getAvailableFamilyList,
+    getActiveFamilyData,
   };
 });
 

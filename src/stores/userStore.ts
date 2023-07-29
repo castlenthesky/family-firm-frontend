@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'vue-router';
@@ -13,11 +13,12 @@ export const useUserStore = defineStore('user', () => {
   const router = useRouter();
 
   // State
-  const userAuth = ref<string>();
-  const userEmail = ref<string>();
-  const userName = ref<string>();
+  const userAuth = ref<string>('');
+  const userEmail = ref<string>('');
+  const userName = ref<string>('');
   const userAccess = ref<string[]>();
   const userMembership = ref<string[]>();
+  const userActiveFamily = ref({ id: '', name: '' });
 
   // Getters / Computed
   // const userAge = computed(() => 1 + 1);
@@ -69,11 +70,13 @@ export const useUserStore = defineStore('user', () => {
   return {
     signIn,
     signOut,
+    setUserData,
     userAuth,
     userEmail,
     userName,
     userAccess,
     userMembership,
+    userActiveFamily,
   };
 });
 

@@ -2,34 +2,34 @@
   Home Page
   <!-- <q-btn v-for="family in familyList"></q-btn> -->
   <q-btn
-    v-model="activeFamily"
+    v-model="user.userActiveFamily"
     v-for="family in familyList"
-    :key="family"
+    :key="family.id"
     :value="family"
-    @click="setActiveFamily(family)"
+    @click="setActiveFamily({ id: family.id, name: family.name })"
   >
-    {{ family }}
+    {{ family.name }}
   </q-btn>
-  <p>Active Family: {{ activeFamily }}</p>
+  <p>Active Family: {{ familyStore.activeFamily }}</p>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { getUserFamilies } from 'src/services/families';
-import { getAuth } from 'firebase/auth';
+import { useUserStore } from 'src/stores';
+import { useFamilyStore } from 'src/stores/familyStore';
 
-const familyList = ref<string[]>();
-const activeFamily = ref();
+const user = useUserStore();
+const familyStore = useFamilyStore();
 
-function setActiveFamily(familyName: string) {
-  activeFamily.value = familyName;
+const familyList = ref<{ id: string; name: string }[]>();
+
+function setActiveFamily(family: { id: string; name: string }) {
+  user.userActiveFamily = family;
+  familyStore.getActiveFamilyData(family.id);
 }
 
-onBeforeMount(async () => {
-  getAuth().onAuthStateChanged(async (user) => {
-    if (user && user.email) {
-      familyList.value = await getUserFamilies(user.email);
-    }
-  });
+onMounted(async () => {
+  familyList.value = await getUserFamilies(user.userEmail);
 });
 </script>
