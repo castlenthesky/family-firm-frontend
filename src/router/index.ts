@@ -1,4 +1,3 @@
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { route } from 'quasar/wrappers';
 import { firebaseAuth } from 'src/boot/firebase';
 import {

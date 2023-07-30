@@ -1,7 +1,8 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { firebaseAuth } from 'src/boot/firebase';
+import { db, firebaseAuth } from 'src/boot/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -31,6 +32,9 @@ export const useAuthStore = defineStore('auth', () => {
       user.password
     );
     if (registrationResult) {
+      setDoc(doc(db, 'users', user.email), {
+        email: user.email,
+      });
       userSet(registrationResult.user);
     } else {
       throw new Error('Registration error.');
