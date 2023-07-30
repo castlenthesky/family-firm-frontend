@@ -10,10 +10,12 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { useUserStore } from './userStore';
+import { useFamilyStore } from './familyStore';
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
   const userStore = useUserStore();
+  const familyStore = useFamilyStore();
 
   const auth = ref<User | null>(null);
   const isReady = ref(false);
@@ -25,6 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function userSet(userState: User | null) {
     auth.value = userState;
     await userStore.setUserData(auth.value?.email);
+    await familyStore.getAvailableFamilyList(auth.value?.email);
     console.log('User state changed:', auth.value?.email);
   }
 
