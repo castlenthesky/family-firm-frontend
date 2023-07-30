@@ -88,24 +88,6 @@ const menuList = [
     separator: true,
   },
   {
-    icon: 'person',
-    path: '/register',
-    label: 'Register',
-    separator: false,
-  },
-  {
-    icon: 'login',
-    path: '/login',
-    label: 'Login',
-    separator: false,
-  },
-  {
-    icon: 'logout',
-    path: '/login',
-    label: 'Logout',
-    separator: true,
-  },
-  {
     icon: 'admin_panel_settings',
     path: '/admin',
     label: 'Admin',

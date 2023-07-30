@@ -1,23 +1,29 @@
 import { computed, ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { getfamilyById, getUserFamilies } from 'src/services/families';
+import { DocumentData } from 'firebase/firestore';
 
 export const useFamilyStore = defineStore('family', () => {
   // State
-  const availableFamilyList = ref<{ id: string; name: string }[]>([]);
-  const activeFamily = ref();
+  const availableFamilyList = ref<DocumentData[]>([]);
+  const family = ref();
 
   // Getters
   const availableFamilyCount = computed(() => availableFamilyList.value.length);
 
   // Actions
-  async function init(userEmail: string) {
-    console.log('Getting family data for', userEmail);
-    await getAvailableFamilyList(userEmail);
-    if (availableFamilyCount.value == 1) {
-      activeFamily.value = getActiveFamilyData(availableFamilyList.value[0].id);
+  async function familySet(userEmail: string | null | undefined) {
+    if (userEmail) {
+      console.log('Setting family data for', userEmail);
+      await getAvailableFamilyList(userEmail);
+      if (availableFamilyCount.value == 1) {
+        family.value = getActiveFamilyData(availableFamilyList.value[0].id);
+      }
+      return;
+    } else {
+      availableFamilyList.value = [];
+      family.value = undefined;
     }
-    return;
   }
 
   async function getAvailableFamilyList(userEmail: string) {
@@ -26,15 +32,19 @@ export const useFamilyStore = defineStore('family', () => {
   }
 
   async function getActiveFamilyData(familyId: string) {
-    activeFamily.value = await getfamilyById(familyId);
+    const familyData = await getfamilyById(familyId);
+    family.value = {
+      id: familyData.id,
+      ...familyData.data(),
+    };
   }
 
   // async function setActiveFamily(family)
 
   return {
-    init,
+    familySet,
     availableFamilyList,
-    activeFamily,
+    family,
     availableFamilyCount,
     getAvailableFamilyList,
     getActiveFamilyData,

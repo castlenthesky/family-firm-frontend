@@ -23,10 +23,11 @@ export const useUserStore = defineStore('user', () => {
   async function userDataSet(emailInput: string | null | undefined) {
     if (emailInput) {
       user.value = (await getDoc(doc(db, 'users', emailInput))).data();
-      await familyStore.init(emailInput);
+      await familyStore.familySet(emailInput);
       isReadySet(true);
     } else {
-      user.value = emailInput;
+      user.value = null;
+      familyStore.familySet(null);
       isReadySet(false);
     }
   }
@@ -35,7 +36,6 @@ export const useUserStore = defineStore('user', () => {
     user,
     userDataSet,
     isReady,
-    activeFamily,
   };
 });
 

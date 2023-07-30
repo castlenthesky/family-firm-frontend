@@ -6,6 +6,7 @@ import {
   query,
   where,
   doc,
+  DocumentData,
 } from 'firebase/firestore';
 
 const familiesCollection = 'families';
@@ -15,7 +16,7 @@ export async function getAllFamilies() {
 }
 
 export async function getUserFamilies(userEmail: string) {
-  const userFamilies: { id: string; name: string }[] = [];
+  const userFamilies: DocumentData[] = [];
 
   const userFamiliesQuery = query(
     collection(db, 'families'),
@@ -25,7 +26,7 @@ export async function getUserFamilies(userEmail: string) {
   userFamilySnapshot.forEach((familyDoc) => {
     userFamilies.push({
       id: familyDoc.id,
-      name: familyDoc.data().name,
+      ...familyDoc.data(),
     });
   });
 
@@ -33,5 +34,5 @@ export async function getUserFamilies(userEmail: string) {
 }
 
 export async function getfamilyById(familyId: string) {
-  return (await getDoc(doc(collection(db, 'families'), familyId))).data();
+  return await getDoc(doc(collection(db, 'families'), familyId));
 }

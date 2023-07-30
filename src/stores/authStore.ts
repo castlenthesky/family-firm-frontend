@@ -25,6 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function userSet(userState: User | null) {
     auth.value = userState;
     await userStore.userDataSet(auth.value?.email);
+    isReady.value = userState ? true : false;
     console.log('User state changed:', auth.value?.email);
   }
 
@@ -77,8 +78,13 @@ export const useAuthStore = defineStore('auth', () => {
 
 const unsub = onAuthStateChanged(firebaseAuth, (user) => {
   const authStore = useAuthStore();
-  authStore.isReadySet(true);
   authStore.userSet(user);
+
+  if (user && user.email) {
+    authStore.isReadySet(true);
+  } else {
+    authStore.isReadySet(false);
+  }
   unsub();
 });
 

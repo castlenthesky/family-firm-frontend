@@ -6,20 +6,23 @@
         <q-item clickable>
           <q-item-section>Profile</q-item-section>
         </q-item>
+
         <q-separator />
+
         <q-item
           clickable
           v-for="family in familyStore.availableFamilyList"
           :key="family.id"
-          @click="console.log(family)"
+          @click="familyStore.family.value = family"
         >
           <q-item-section>{{ family.name }} Family</q-item-section>
         </q-item>
+
         <q-separator />
+
         <q-item clickable>
           <q-item-section>Settings</q-item-section>
         </q-item>
-        <q-separator />
         <q-item clickable @click="authStore.userLogout()">
           <q-item-section>Logout</q-item-section>
         </q-item>
@@ -29,9 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore, useFamilyStore, useUserStore } from 'src/stores';
+import { useAuthStore, useFamilyStore } from 'src/stores';
 
 const authStore = useAuthStore();
-const userStore = useUserStore();
 const familyStore = useFamilyStore();
 </script>
