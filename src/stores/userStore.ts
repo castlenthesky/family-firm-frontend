@@ -2,8 +2,11 @@ import { ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { db } from 'src/boot/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { useFamilyStore } from './familyStore';
 
 export const useUserStore = defineStore('user', () => {
+  const familyStore = useFamilyStore();
+
   // State
   const isReady = ref(false);
   const user = ref();
@@ -17,11 +20,11 @@ export const useUserStore = defineStore('user', () => {
     isReady.value = readyState;
   }
 
-  async function setUserData(emailInput: string | null | undefined) {
+  async function userDataSet(emailInput: string | null | undefined) {
     if (emailInput) {
       user.value = (await getDoc(doc(db, 'users', emailInput))).data();
+      await familyStore.init(emailInput);
       isReadySet(true);
-      console.log(user.value);
     } else {
       user.value = emailInput;
       isReadySet(false);
@@ -30,9 +33,9 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     user,
+    userDataSet,
     isReady,
     activeFamily,
-    setUserData,
   };
 });
 

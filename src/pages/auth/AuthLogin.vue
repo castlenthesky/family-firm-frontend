@@ -26,11 +26,7 @@
         <div class="col-12">
           <div class="row justify-around">
             <div class="col-4 button-container">
-              <q-btn
-                color="positive"
-                label="Login/Register"
-                @click="handleSubmit"
-              />
+              <q-btn color="positive" label="Login" @click="handleSubmit" />
             </div>
             <div class="col-4 button-container">
               <q-btn color="negative" label="Reset" type="reset" />

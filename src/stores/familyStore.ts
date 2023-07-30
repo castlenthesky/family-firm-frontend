@@ -11,6 +11,15 @@ export const useFamilyStore = defineStore('family', () => {
   const availableFamilyCount = computed(() => availableFamilyList.value.length);
 
   // Actions
+  async function init(userEmail: string) {
+    console.log('Getting family data for', userEmail);
+    await getAvailableFamilyList(userEmail);
+    if (availableFamilyCount.value == 1) {
+      activeFamily.value = getActiveFamilyData(availableFamilyList.value[0].id);
+    }
+    return;
+  }
+
   async function getAvailableFamilyList(userEmail: string) {
     availableFamilyList.value = await getUserFamilies(userEmail);
     return availableFamilyList.value;
@@ -23,6 +32,7 @@ export const useFamilyStore = defineStore('family', () => {
   // async function setActiveFamily(family)
 
   return {
+    init,
     availableFamilyList,
     activeFamily,
     availableFamilyCount,
