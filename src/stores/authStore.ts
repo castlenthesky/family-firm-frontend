@@ -9,9 +9,11 @@ import {
   User,
   onAuthStateChanged,
 } from 'firebase/auth';
+import { useUserStore } from './userStore';
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
+  const userStore = useUserStore();
 
   const auth = ref<User | null>(null);
   const isReady = ref(false);
@@ -20,8 +22,9 @@ export const useAuthStore = defineStore('auth', () => {
     isReady.value = readyState;
   }
 
-  function userSet(userState: User | null) {
+  async function userSet(userState: User | null) {
     auth.value = userState;
+    await userStore.setUserData(auth.value?.email);
     console.log('User state changed:', auth.value?.email);
   }
 
@@ -48,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.password
     );
     if (authResult && authResult.user) {
-      userSet(authResult.user);
+      await userSet(authResult.user);
       return;
     } else {
       throw new Error('Invalid username or password.');
@@ -62,6 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
+    auth,
     isReady,
     isReadySet,
     userSet,

@@ -16,7 +16,7 @@
         <div v-if="authStore.isReady">
           <div class="col-md-3 q-gutter-md">
             <UserButton />
-            <template v-if="!authStore.user">
+            <template v-if="!authStore.auth">
               <q-btn color="black" to="/register"> Register </q-btn>
               <q-btn color="black" to="/login"> Login </q-btn>
             </template>

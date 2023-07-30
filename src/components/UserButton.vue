@@ -1,6 +1,6 @@
 <template>
-  <q-btn style="width: 280px" v-if="authStore.user" color="black">
-    {{ authStore.user?.email }}
+  <q-btn style="width: 280px" v-if="authStore.auth" color="black">
+    {{ authStore.auth?.email }}
     <q-menu fit>
       <q-list style="min-width: 100px">
         <q-item clickable>
