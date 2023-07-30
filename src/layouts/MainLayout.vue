@@ -13,14 +13,14 @@
 
         <q-toolbar-title><strong>Family</strong>Firm</q-toolbar-title>
 
-        <div v-if="auth.isReady">
-          <q-btn v-if="auth.user" color="black" @click="auth.userLogout()">
-            {{ auth.user?.email }}
-          </q-btn>
-          <template v-if="!auth.user">
-            <q-btn color="black" to="/register"> Register </q-btn>
-            <q-btn color="black" to="/login"> Login </q-btn></template
-          >
+        <div v-if="authStore.isReady">
+          <div class="col-md-3 q-gutter-md">
+            <UserButton />
+            <template v-if="!authStore.user">
+              <q-btn color="black" to="/register"> Register </q-btn>
+              <q-btn color="black" to="/login"> Login </q-btn>
+            </template>
+          </div>
         </div>
       </q-toolbar>
     </q-header>
@@ -61,9 +61,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import UserButton from 'src/components/UserButton.vue';
 import { useAuthStore } from 'src/stores';
 
-const auth = useAuthStore();
+const authStore = useAuthStore();
 
 const activeLink = ref('Home');
 

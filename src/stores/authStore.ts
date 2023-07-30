@@ -13,16 +13,16 @@ import {
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
 
-  const user = ref<User | null>(null);
+  const auth = ref<User | null>(null);
   const isReady = ref(false);
 
-  function setIsReady(readyState: boolean) {
+  function isReadySet(readyState: boolean) {
     isReady.value = readyState;
   }
 
   function userSet(userState: User | null) {
-    user.value = userState;
-    console.log('User state changed:', user.value?.email);
+    auth.value = userState;
+    console.log('User state changed:', auth.value?.email);
   }
 
   async function userRegister(user: { email: string; password: string }) {
@@ -57,14 +57,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function userLogout() {
     await firebaseAuth.signOut();
-    userSet(null);
     router.push('/login');
+    userSet(null);
   }
 
   return {
-    user,
     isReady,
-    setIsReady,
+    isReadySet,
     userSet,
     userRegister,
     userLogin,
@@ -74,7 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 const unsub = onAuthStateChanged(firebaseAuth, (user) => {
   const authStore = useAuthStore();
-  authStore.setIsReady(true);
+  authStore.isReadySet(true);
   authStore.userSet(user);
   unsub();
 });

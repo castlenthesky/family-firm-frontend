@@ -50,7 +50,7 @@ import { ref } from 'vue';
 import { useAuthStore } from 'src/stores';
 import { useRouter } from 'vue-router';
 
-const auth = useAuthStore();
+const authStore = useAuthStore();
 const router = useRouter();
 const userInputs = ref({
   email: '',
@@ -60,7 +60,7 @@ const userInputs = ref({
 const errorMessage = ref('');
 
 async function handleSubmit() {
-  await auth.userLogin(userInputs.value);
+  await authStore.userLogin(userInputs.value);
   router.push('/');
 }
 </script>

@@ -20,7 +20,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores';
 
-const auth = useAuthStore();
+const authStore = useAuthStore();
 
 const router = useRouter();
 const userInput = ref({
@@ -29,7 +29,7 @@ const userInput = ref({
 });
 
 const register = async () => {
-  await auth.userRegister(userInput.value);
+  await authStore.userRegister(userInput.value);
   router.push('/');
 };
 </script>

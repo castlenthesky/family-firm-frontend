@@ -11,6 +11,8 @@ export const useUserStore = defineStore('user', () => {
   const router = useRouter();
   const familyStore = useFamilyStore();
 
+  const isReady = ref(false);
+
   // State
   const userAuth = ref<string>('');
   const userEmail = ref<string>('');
@@ -23,6 +25,10 @@ export const useUserStore = defineStore('user', () => {
   // const userAge = computed(() => 1 + 1);
 
   // Actions
+  async function isReadySet(readyState: boolean) {
+    isReady.value = readyState;
+  }
+
   const signIn = async (userData: { email: string; password: string }) => {
     await signInWithEmailAndPassword(
       getAuth(),
@@ -41,10 +47,12 @@ export const useUserStore = defineStore('user', () => {
         await familyStore.getActiveFamilyData(
           userMembership.value[0]._key.path.segments[offset]
         );
+        isReadySet(true);
       }
       router.push('/');
     } else {
       userAuth.value = '';
+      isReadySet(false);
       router.push('/login');
     }
   };
@@ -53,6 +61,7 @@ export const useUserStore = defineStore('user', () => {
     await firebaseAuth.signOut();
     userAuth.value = '';
     userEmail.value = '';
+    isReadySet(false);
     router.push('/login');
   }
 
@@ -61,6 +70,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function setUserData(emailInput: string) {
+    console.log('Getting data for', emailInput);
     const databaseResponse = await getUserData(emailInput);
     if (databaseResponse) {
       userEmail.value = databaseResponse.email;
@@ -68,12 +78,14 @@ export const useUserStore = defineStore('user', () => {
       userAccess.value = databaseResponse.access;
       userMembership.value = databaseResponse.membership;
       console.log('Logged in as:', userEmail.value);
+      isReadySet(true);
     } else {
       return;
     }
   }
 
   return {
+    isReady,
     signIn,
     signOut,
     setUserData,
