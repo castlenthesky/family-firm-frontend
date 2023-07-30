@@ -1,5 +1,6 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { route } from 'quasar/wrappers';
+import { firebaseAuth } from 'src/boot/firebase';
 import {
   createMemoryHistory,
   createRouter,
@@ -9,17 +10,8 @@ import {
 
 import routes from './routes';
 
-const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const removeListener = onAuthStateChanged(
-      getAuth(),
-      (user) => {
-        removeListener();
-        resolve(user);
-      },
-      reject
-    );
-  });
+const getCurrentUser = async () => {
+  return firebaseAuth.currentUser?.email;
 };
 
 /*

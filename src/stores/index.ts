@@ -1,6 +1,7 @@
 import { store } from 'quasar/wrappers';
 import { createPinia } from 'pinia';
 import { Router } from 'vue-router';
+export { useAuthStore } from './authStore';
 export { useUserStore } from './userStore';
 export { useFamilyStore } from './familyStore';
 

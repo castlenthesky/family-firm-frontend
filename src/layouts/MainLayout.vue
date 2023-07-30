@@ -11,12 +11,16 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title><strong>Family</strong>Firm </q-toolbar-title>
+        <q-toolbar-title><strong>Family</strong>Firm</q-toolbar-title>
 
-        <div>
-          <q-btn color="black" @click="signOut()">
-            {{ user.userEmail }}
+        <div v-if="auth.isReady">
+          <q-btn v-if="auth.user" color="black" @click="auth.userLogout()">
+            {{ auth.user?.email }}
           </q-btn>
+          <template v-if="!auth.user">
+            <q-btn color="black" to="/register"> Register </q-btn>
+            <q-btn color="black" to="/login"> Login </q-btn></template
+          >
         </div>
       </q-toolbar>
     </q-header>
@@ -41,15 +45,6 @@
           <q-separator :key="'sep' + index" v-if="menuItem.separator" />
         </template>
       </q-list>
-      <!-- <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list> -->
     </q-drawer>
 
     <q-drawer v-model="rightDrawerOpen" side="right" bordered>
@@ -66,10 +61,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { signOut } from 'src/services/users';
-import { useUserStore } from 'src/stores';
+import { useAuthStore } from 'src/stores';
 
-const user = useUserStore();
+const auth = useAuthStore();
+
 const activeLink = ref('Home');
 
 const menuList = [

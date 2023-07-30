@@ -1,23 +1,30 @@
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { firebaseAuth } from 'src/boot/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
   User,
+  onAuthStateChanged,
 } from 'firebase/auth';
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User>();
+  const router = useRouter();
 
-  function userSet(userState: User) {
+  const user = ref<User | null>(null);
+  const isReady = ref(false);
+
+  function setIsReady(readyState: boolean) {
+    isReady.value = readyState;
+  }
+
+  function userSet(userState: User | null) {
     user.value = userState;
-    console.log('Auth user:', user.value);
+    console.log('User state changed:', user.value?.email);
   }
 
   async function userRegister(user: { email: string; password: string }) {
-    console.log('Registering User');
     const registrationResult = await createUserWithEmailAndPassword(
       firebaseAuth,
       user.email,
@@ -38,20 +45,34 @@ export const useAuthStore = defineStore('auth', () => {
     );
     if (authResult && authResult.user) {
       userSet(authResult.user);
+      return;
     } else {
       throw new Error('Invalid username or password.');
     }
   }
 
   async function userLogout() {
-    signOut(firebaseAuth);
+    await firebaseAuth.signOut();
+    userSet(null);
+    router.push('/login');
   }
 
   return {
+    user,
+    isReady,
+    setIsReady,
+    userSet,
     userRegister,
     userLogin,
     userLogout,
   };
+});
+
+const unsub = onAuthStateChanged(firebaseAuth, (user) => {
+  const authStore = useAuthStore();
+  authStore.setIsReady(true);
+  authStore.userSet(user);
+  unsub();
 });
 
 if (import.meta.hot) {
