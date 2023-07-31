@@ -3,7 +3,7 @@
     {{ authStore.auth?.email }}
     <q-menu fit>
       <q-list style="min-width: 100px">
-        <q-item clickable>
+        <q-item clickable to="/profile">
           <q-item-section>Profile</q-item-section>
         </q-item>
 
@@ -13,7 +13,7 @@
           clickable
           v-for="family in familyStore.availableFamilyList"
           :key="family.id"
-          @click="familyStore.family.value = family"
+          @click="familyStore.family = family"
         >
           <q-item-section>{{ family.name }} Family</q-item-section>
         </q-item>

@@ -10,6 +10,9 @@ import { ref, onMounted } from 'vue';
 import { db } from 'src/boot/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 import * as d3 from 'd3';
+import { useFamilyStore } from 'src/stores';
+
+const familyStore = useFamilyStore();
 
 const svg = ref();
 const graph = ref();
@@ -122,33 +125,36 @@ onMounted(async () => {
   yAxisGroup.value = graph.value.append('g');
 });
 
-onSnapshot(collection(db, 'families', 'henson', 'transactions'), (response) => {
-  response.docChanges().forEach((change) => {
-    const docData = {
-      ...change.doc.data(),
-      id: change.doc.id,
-      index: change.newIndex,
-      oldIndex: change.type == 'added' ? null : change.oldIndex,
-    };
+onSnapshot(
+  collection(db, 'families', familyStore.family.id, 'transactions'),
+  (response) => {
+    response.docChanges().forEach((change) => {
+      const docData = {
+        ...change.doc.data(),
+        id: change.doc.id,
+        index: change.newIndex,
+        oldIndex: change.type == 'added' ? null : change.oldIndex,
+      };
 
-    switch (change.type) {
-      case 'added':
-        transactionData.value.push(docData);
-        break;
-      case 'modified':
-        transactionData.value[docData.oldIndex] = docData;
-        break;
-      case 'removed':
-        transactionData.value = transactionData.value.filter(
-          (transaction) => transaction.index !== docData.oldIndex
-        );
-        break;
-      default:
-        break;
-    }
-  });
+      switch (change.type) {
+        case 'added':
+          transactionData.value.push(docData);
+          break;
+        case 'modified':
+          transactionData.value[docData.oldIndex] = docData;
+          break;
+        case 'removed':
+          transactionData.value = transactionData.value.filter(
+            (transaction) => transaction.index !== docData.oldIndex
+          );
+          break;
+        default:
+          break;
+      }
+    });
 
-  console.log('Updated data received...');
-  update();
-});
+    console.log('Updated data received...');
+    update();
+  }
+);
 </script>

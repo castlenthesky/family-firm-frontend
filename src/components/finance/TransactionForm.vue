@@ -137,6 +137,9 @@ import {
   addDoc,
   orderBy,
 } from 'firebase/firestore';
+import { useFamilyStore } from 'src/stores';
+
+const familyStore = useFamilyStore();
 
 const categoryOptions = ref<string[]>([]);
 
@@ -156,10 +159,10 @@ const transaction = ref({
 });
 
 const addTransaction = () => {
-  addDoc(
-    collection(db, 'families', 'henson', 'transactions'),
-    transaction.value
-  );
+  addDoc(collection(db, 'families', familyStore.family.id, 'transactions'), {
+    ...transaction.value,
+    date: new Date(transaction.value.date),
+  });
 };
 
 const categoriesQuery = query(

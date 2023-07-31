@@ -1,9 +1,7 @@
 <template>
-  <div class="flex">
-    <div class="row">
-      <div class="col-6"><h1>User Profile</h1></div>
-      <div class="col-6">{{ user.$state }}</div>
-    </div>
+  <div class="row"><h5>User Profile</h5></div>
+  <div class="row">
+    <div class="col-6">{{ user.$state }}</div>
   </div>
 </template>
 

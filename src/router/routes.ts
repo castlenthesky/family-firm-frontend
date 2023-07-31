@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
           caption: 'Home',
           icon: 'home',
           separator: true,
+          requiresAuth: true,
         },
       },
       {
@@ -39,6 +40,10 @@ const routes: RouteRecordRaw[] = [
       },
 
       // Auth Routes
+      {
+        path: '/profile',
+        component: () => import('pages/user/UserProfile.vue'),
+      },
       { path: '/login', component: () => import('pages/auth/AuthLogin.vue') },
       {
         path: '/register',

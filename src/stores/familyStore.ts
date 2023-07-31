@@ -16,9 +16,7 @@ export const useFamilyStore = defineStore('family', () => {
     if (userEmail) {
       console.log('Setting family data for', userEmail);
       await getAvailableFamilyList(userEmail);
-      if (availableFamilyCount.value == 1) {
-        family.value = getActiveFamilyData(availableFamilyList.value[0].id);
-      }
+      family.value = availableFamilyList.value[0];
       return;
     } else {
       availableFamilyList.value = [];
