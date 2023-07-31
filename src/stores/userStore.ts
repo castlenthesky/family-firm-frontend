@@ -10,7 +10,6 @@ export const useUserStore = defineStore('user', () => {
   // State
   const isReady = ref(false);
   const user = ref();
-  const activeFamily = ref<{ id: string; name: string }>();
 
   // Getters / Computed
   // const userAge = computed(() => 1 + 1);
