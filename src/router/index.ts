@@ -40,14 +40,12 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach(async (to, from, next) => {
-    if (
-      to.matched.some((record) => record.meta.requiresAuth) &&
-      (await getCurrentUser())
-    ) {
+    const currentUser = await getCurrentUser();
+    if (to.matched.some((record) => record.meta.requiresAuth) && currentUser) {
       next();
     } else if (
       to.matched.some((record) => record.meta.requiresAuth) &&
-      !(await getCurrentUser())
+      !currentUser
     ) {
       Router.push('/login');
       next();

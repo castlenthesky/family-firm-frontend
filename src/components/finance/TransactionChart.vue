@@ -14,12 +14,12 @@ import { useFamilyStore } from 'src/stores';
 
 const familyStore = useFamilyStore();
 
-const svg = ref();
-const graph = ref();
-const xAxisGroup = ref();
-const yAxisGroup = ref();
-const xAxis = ref();
-const yAxis = ref();
+const svg = ref(),
+  graph = ref(),
+  xAxisGroup = ref(),
+  yAxisGroup = ref(),
+  xAxis = ref(),
+  yAxis = ref();
 
 const transactionData = ref([]);
 

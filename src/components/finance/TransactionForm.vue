@@ -16,94 +16,96 @@
             class="q-gutter-md transaction-form"
           >
             <div class="fit row justify-evenly" id="test">
-              <div class="col-6 q-gutter-md">
-                <div class="my-content">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="transaction.date"
-                    mask="date"
-                    :rules="['date']"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy
-                          cover
-                          transition-show="scale"
-                          transition-hide="scale"
-                        >
-                          <q-date v-model="transaction.date">
-                            <div class="row items-center justify-end">
-                              <q-btn
-                                v-close-popup
-                                label="Close"
-                                color="primary"
-                                flat
-                              />
-                            </div>
-                          </q-date>
-                        </q-popup-proxy>
-                      </q-icon>
-                    </template>
-                  </q-input>
-                </div>
+              <div class="col-12 q-gutter-md">
+                <q-input
+                  outlined
+                  dense
+                  v-model="transaction.date"
+                  mask="date"
+                  :rules="['date']"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        cover
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date v-model="transaction.date">
+                          <div class="row items-center justify-end">
+                            <q-btn
+                              v-close-popup
+                              label="Close"
+                              color="primary"
+                              flat
+                            />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
               </div>
-              <div class="col-6 q-gutter-md">
-                <div class="my-content">
-                  <q-input
-                    outlined
-                    dense
-                    v-model.number="transaction.amount"
-                    label="Transaction Amount"
-                    lazy-rules
-                    prefix="$"
-                    placeholder="2.37"
-                    :rules="[
-                      (val) =>
-                        (typeof val == 'number' && val != 0) ||
-                        'Please include a transaction amount',
-                    ]"
-                  />
-                </div>
+              <div class="col-12 q-gutter-md">
+                <q-select
+                  outlined
+                  v-model="activeCategory"
+                  label="Transaction Category"
+                  stack-label
+                  hint=""
+                  dense
+                  options-dense
+                  :options="categoryOptions"
+                  :option-label="
+                    (categoryOptions) =>
+                      categoryOptions === null ? '' : categoryOptions.category
+                  "
+                  :option-value="
+                    (categoryOptions) =>
+                      categoryOptions === null ? '' : categoryOptions.category
+                  "
+                  @update:model-value="selectTransactionCategory()"
+                  ><template v-slot:prepend>
+                    <q-icon :name="activeCategoryIcon" />
+                  </template>
+                  <template v-slot:append>
+                    <q-icon
+                      name="close"
+                      @click.stop.prevent="transaction.category = null"
+                      class="cursor-pointer"
+                    />
+                  </template>
+                </q-select>
               </div>
-              <div class="col-6 q-gutter-md">
-                <div class="my-content">
-                  <q-select
-                    outlined
-                    v-model="transaction.category"
-                    :options="categoryOptions"
-                    label="Transaction Category"
-                    stack-label
-                    hint=""
-                    dense
-                    options-dense
-                    ><template v-slot:prepend>
-                      <q-icon name="event" />
-                    </template>
-                    <template v-slot:append>
-                      <q-icon
-                        name="close"
-                        @click.stop.prevent="transaction.category = null"
-                        class="cursor-pointer"
-                      /> </template
-                  ></q-select>
-                </div>
+              <div class="col-12 q-gutter-md">
+                <q-select
+                  outlined
+                  dense
+                  options-dense
+                  v-model="transaction.subcategory"
+                  label="Transaction Subcategory"
+                  :options="activeCategory?.subcategories"
+                  hint=""
+                />
               </div>
-              <div class="col-6 q-gutter-md">
-                <div class="my-content">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="transaction.subcategory"
-                    label="Transaction Subcategory"
-                    lazy-rules
-                    :rules="[
-                      (val) =>
-                        (val && val.length > 0) ||
-                        'Please include a transaction subcategory',
-                    ]"
-                  />
-                </div>
+
+              <div class="col-12 q-gutter-md">
+                <q-input
+                  outlined
+                  dense
+                  v-model.number="transaction.amount"
+                  label="Transaction Amount"
+                  lazy-rules
+                  placeholder="2.37"
+                  :rules="[
+                    (val) =>
+                      (typeof val == 'number' && val != 0) ||
+                      'Please include a transaction amount',
+                  ]"
+                  ><template v-slot:prepend>
+                    <q-icon name="attach_money" />
+                  </template>
+                </q-input>
               </div>
             </div>
 
@@ -130,18 +132,16 @@
 import TransactionChart from './TransactionChart.vue';
 import { ref } from 'vue';
 import { db } from 'src/boot/firebase';
-import {
-  query,
-  collection,
-  getDocs,
-  addDoc,
-  orderBy,
-} from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { useFamilyStore } from 'src/stores';
 
 const familyStore = useFamilyStore();
 
-const categoryOptions = ref<string[]>([]);
+const activeCategory = ref();
+const activeCategoryIcon = ref<string>('category');
+const categoryOptions = ref<string[]>(
+  familyStore.family.transactionCategorization
+);
 
 const currentDate = () => {
   const currentTimestamp = new Date();
@@ -161,21 +161,16 @@ const transaction = ref({
 const addTransaction = () => {
   addDoc(collection(db, 'families', familyStore.family.id, 'transactions'), {
     ...transaction.value,
+    category: activeCategory.value.category,
     date: new Date(transaction.value.date),
   });
 };
 
-const categoriesQuery = query(
-  collection(db, 'categories'),
-  orderBy('sort', 'asc')
-);
-
-getDocs(categoriesQuery).then((querySnapshot) => {
-  categoryOptions.value = [];
-  querySnapshot.forEach((doc) => {
-    categoryOptions.value.push(doc.id);
-  });
-});
+const selectTransactionCategory = () => {
+  transaction.value.category = activeCategory.value.category;
+  activeCategoryIcon.value = activeCategory.value.icon;
+  transaction.value.subcategory = null;
+};
 
 // Form Handling
 const onReset = () => {

@@ -29,7 +29,7 @@ import {
 } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
 import { useFamilyStore } from 'src/stores';
-import { ref } from 'vue';
+import { onUnmounted, ref } from 'vue';
 
 const familyStore = useFamilyStore();
 
@@ -50,7 +50,7 @@ const columns = [
     field: 'date',
     sortable: true,
     align: 'left',
-    format: (val) => `${convertTimestamp(val)}`,
+    format: (val: Timestamp) => `${convertTimestamp(val)}`,
   },
   {
     name: 'account',
@@ -65,8 +65,8 @@ const columns = [
     field: 'amount',
     sortable: true,
     align: 'center',
-    format: (val) => `$${val}`,
-    sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+    format: (val: number) => `$${val}`,
+    sort: (a: number, b: number) => a - b,
   },
   {
     name: 'category',
@@ -110,5 +110,9 @@ const unsubscribe = onSnapshot(transactionQuery, (querySnapshot) => {
     ...transaction.data(),
   }));
   loadingState.value = false;
+});
+
+onUnmounted(() => {
+  unsubscribe();
 });
 </script>
