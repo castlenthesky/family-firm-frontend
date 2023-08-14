@@ -169,7 +169,7 @@ const addTransaction = () => {
 const selectTransactionCategory = () => {
   transaction.value.category = activeCategory.value.category;
   activeCategoryIcon.value = activeCategory.value.icon;
-  transaction.value.subcategory = null;
+  transaction.value.subcategory = activeCategory.value.subcategories[0];
 };
 
 // Form Handling
