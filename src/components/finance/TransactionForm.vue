@@ -46,10 +46,26 @@
                   </template>
                 </q-input>
               </div>
+
               <div class="col-12 q-gutter-md">
                 <q-select
                   outlined
-                  v-model="activeCategory"
+                  v-model="transaction.account"
+                  label="Transaction Account"
+                  stack-label
+                  hint=""
+                  dense
+                  options-dense
+                  emit-value
+                  :options="accountList"
+                >
+                </q-select>
+              </div>
+
+              <div class="col-12 q-gutter-md">
+                <q-select
+                  outlined
+                  v-model="transaction.account"
                   label="Transaction Category"
                   stack-label
                   hint=""
@@ -137,11 +153,19 @@ import { useFamilyStore } from 'src/stores';
 
 const familyStore = useFamilyStore();
 
+const accountList = ref();
 const activeCategory = ref();
 const activeCategoryIcon = ref<string>('category');
 const categoryOptions = ref<string[]>(
   familyStore.family.transactionCategorization
 );
+
+accountList.value = familyStore.family.accounts.map((account) => {
+  return {
+    label: `${account.name} (${account.number})`,
+    value: `${account.name} (${account.number})`,
+  };
+});
 
 const currentDate = () => {
   const currentTimestamp = new Date();
@@ -153,9 +177,12 @@ const currentDate = () => {
 // Add transaction to the transactions collection
 const transaction = ref({
   date: currentDate(),
+  account: null,
   category: null,
   subcategory: null,
   amount: null,
+  vendor: null,
+  note: null,
 });
 
 const addTransaction = () => {
