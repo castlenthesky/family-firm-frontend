@@ -82,21 +82,27 @@ const menuList = [
     separator: false,
   },
   {
+    icon: 'calendar_month',
+    path: '/calendar',
+    label: 'Calendar',
+    separator: false,
+  },
+  {
+    icon: 'flag_circle',
+    path: '/goals',
+    label: 'Goals & Development',
+    separator: false,
+  },
+  {
     icon: 'price_change',
     path: '/finances',
-    label: 'Budget',
+    label: 'Finances',
     separator: true,
   },
   {
     icon: 'admin_panel_settings',
     path: '/admin',
     label: 'Admin',
-    separator: false,
-  },
-  {
-    icon: 'help',
-    path: '/',
-    label: 'Help',
     separator: false,
   },
 ];

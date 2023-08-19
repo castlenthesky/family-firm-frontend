@@ -58,14 +58,16 @@
                   options-dense
                   emit-value
                   :options="accountList"
-                >
+                  ><template v-slot:prepend>
+                    <q-icon name="wallet" />
+                  </template>
                 </q-select>
               </div>
 
               <div class="col-12 q-gutter-md">
                 <q-select
                   outlined
-                  v-model="transaction.account"
+                  v-model="activeCategory"
                   label="Transaction Category"
                   stack-label
                   hint=""
@@ -102,7 +104,10 @@
                   label="Transaction Subcategory"
                   :options="activeCategory?.subcategories"
                   hint=""
-                />
+                  ><template v-slot:prepend>
+                    <q-icon name="subdirectory_arrow_right" />
+                  </template>
+                </q-select>
               </div>
 
               <div class="col-12 q-gutter-md">
@@ -120,6 +125,34 @@
                   ]"
                   ><template v-slot:prepend>
                     <q-icon name="attach_money" />
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 q-gutter-md">
+                <q-input
+                  outlined
+                  dense
+                  v-model.number="transaction.vendor"
+                  label="Transaction Vendor"
+                  lazy-rules
+                  placeholder="McDonald's"
+                  hint=""
+                  ><template v-slot:prepend>
+                    <q-icon name="store_mall_directory" />
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 q-gutter-md">
+                <q-input
+                  outlined
+                  dense
+                  v-model.number="transaction.note"
+                  label="Transaction Note"
+                  placeholder="Short description goes here"
+                  ><template v-slot:prepend>
+                    <q-icon name="subject" />
                   </template>
                 </q-input>
               </div>
@@ -149,8 +182,9 @@ import TransactionChart from './TransactionChart.vue';
 import { ref } from 'vue';
 import { db } from 'src/boot/firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import { useFamilyStore } from 'src/stores';
+import { useAuthStore, useFamilyStore } from 'src/stores';
 
+const authStore = useAuthStore();
 const familyStore = useFamilyStore();
 
 const accountList = ref();
@@ -160,12 +194,14 @@ const categoryOptions = ref<string[]>(
   familyStore.family.transactionCategorization
 );
 
-accountList.value = familyStore.family.accounts.map((account) => {
-  return {
-    label: `${account.name} (${account.number})`,
-    value: `${account.name} (${account.number})`,
-  };
-});
+accountList.value = familyStore.family.accounts.map(
+  (account: { name: string; number: number }) => {
+    return {
+      label: `${account.name} (${account.number})`,
+      value: `${account.name} (${account.number})`,
+    };
+  }
+);
 
 const currentDate = () => {
   const currentTimestamp = new Date();
@@ -182,6 +218,7 @@ const transaction = ref({
   subcategory: null,
   amount: null,
   vendor: null,
+  entered_by: authStore.auth?.email,
   note: null,
 });
 
@@ -204,9 +241,13 @@ const onReset = () => {
   console.log('form Reset button clicked');
 
   // Reset form inputs --> Leaving the date
+  activeCategory.value = null;
+  activeCategoryIcon.value = 'category';
   transaction.value.category = null;
   transaction.value.subcategory = null;
   transaction.value.amount = null;
+  transaction.value.vendor = null;
+  transaction.value.note = null;
 };
 
 const onSubmit = () => {
