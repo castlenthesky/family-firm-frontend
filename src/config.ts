@@ -37,4 +37,10 @@ export default {
         'YOUR_FIRESTORE_UNIVERSE_DOMAIN',
     },
   },
+  plaid: {
+    client_id: process.env.PLAID_CLIENT_ID,
+    client_secret: (process.env.PRODUCTION = true
+      ? process.env.PLAID_CLIENT_SECRET_DEVELOPMENT
+      : process.env.PLAID_CLIENT_SECRET_SANDBOX),
+  },
 };
