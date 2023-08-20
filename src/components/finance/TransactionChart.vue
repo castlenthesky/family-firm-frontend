@@ -1,14 +1,14 @@
 <template>
   <div class="canvas"></div>
   <div class="row">
-    <!-- {{ transactionData }} -->
+    {{ aggregateData }}
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { db } from 'src/boot/firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
 import * as d3 from 'd3';
 import { useFamilyStore } from 'src/stores';
 
@@ -22,6 +22,18 @@ const svg = ref(),
   yAxis = ref();
 
 const transactionData = ref([]);
+const aggregateData = ref([]);
+const stackedData = d3
+  .stack()
+  .keys(aggregateData.value.map((period) => Object.keys(period)));
+
+function formatTimestampToYearMonth(timestamp: Timestamp) {
+  const date = timestamp.toDate();
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because getMonth() returns 0-indexed months
+
+  return `${year}-${month}`;
+}
 
 const chart = {
   canvasHeight: 250,
@@ -58,12 +70,12 @@ const update = () => {
 
   // 1. Recalibrate scale domains
   yScaler.domain([0, y_max]);
-  xScaler.domain(
-    transactionData.value.map((transaction) => transaction.category)
-  );
+  xScaler.domain(aggregateData.value.map((period) => Object.keys(period)));
 
   // 2. Join updated data to elements
-  const dataBars = graph.value.selectAll('rect').data(transactionData.value);
+  const dataBars = graph.value
+    .selectAll('rect')
+    .data(aggregateData.value.period);
   // console.log(dataBars);
 
   // 3. Remove unwanted (if any) shapes using the exit selection
@@ -154,6 +166,24 @@ onSnapshot(
     });
 
     console.log('Updated data received...');
+
+    // [
+    // {month: '2023-01', food: 275, tuition: 300},
+    // {month: '2023-02', food: 218, tuition: 330},
+    // {month: '2023-03', food: 227, tuition: 315},
+    // ]
+
+    transactionData.value.forEach((transaction) => {
+      const month = formatTimestampToYearMonth(transaction.date);
+      if (!aggregateData.value[month]) {
+        aggregateData.value[month] = {};
+      }
+      if (!aggregateData.value[month][transaction.category]) {
+        aggregateData.value[month][transaction.category] = 0;
+      }
+      aggregateData.value[month][transaction.category] += transaction.amount;
+    });
+    console.log(aggregateData.value);
     update();
   }
 );
