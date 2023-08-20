@@ -165,11 +165,11 @@
           </q-form>
         </q-card-section>
         <q-card-section>
+          <div class="col-12" align="center">
+            Transaction to submit: {{ transaction }}
+          </div>
           <div class="row justify-evenly">
             <TransactionChart />
-            <div class="col-12" align="center">
-              Transaction to submit: {{ transaction }}
-            </div>
           </div>
         </q-card-section>
       </q-card>
