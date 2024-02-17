@@ -4,136 +4,72 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    clientName: String,
-    env: {
-      type: String,
-      required: true,
-      default: 'sandbox',
-      validator: function (value) {
-        // The value must match one of these strings
-        return ['sandbox', 'development', 'production'].indexOf(value) !== -1;
-      },
-    },
-    link_token: {
-      type: String,
-      required: false,
-    },
-    public_key: {
-      type: String,
-      required: false,
-    },
-    products: Array,
-    receivedRedirectUri: {
-      type: String,
-      required: false,
-    },
-    webhook: {
-      type: String,
-      required: false,
-    },
-    onLoad: {
-      type: Function,
-      required: false,
-    },
-    onSuccess: Function,
-    onExit: {
-      type: Function,
-      required: false,
-    },
-    onEvent: {
-      type: Function,
-      required: false,
-    },
-  },
-  data() {
-    return {
-      plaid: null,
-      linkHandler: null,
-    };
-  },
-  methods: {
-    link_open(e) {
-      e.preventDefault();
+<script setup>
+import { ref, onMounted } from 'vue';
 
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      let self = this;
-      if (this.plaid != null) {
-        // destroy link handler to prevent stacking of iframes
-        if (this.linkHandler != null) {
-          this.linkHandler.destroy();
-          this.linkHandler = null;
-        }
-        this.linkHandler = this.plaid.create({
-          clientName: this.clientName,
-          env: this.env,
-          key: this.public_key,
-          product: this.products,
-          receivedRedirectUri: this.receivedRedirectUri,
-          token: this.link_token,
-          // Optional – use webhooks to get transaction and error updates
-          webhook: this.webhook,
-          onLoad: function () {
-            // Optional, called when Link loads
-            self.onLoad();
-          },
-          onSuccess: function (public_token, metadata) {
-            // Send the public_token to your app server.
-            // The metadata object contains info about the institution the
-            // user selected and the account ID or IDs, if the
-            // Select Account view is enabled.
-            self.onSuccess(public_token, metadata);
-          },
-          onExit: function (err, metadata) {
-            // The user exited the Link flow.
-            if (err != null) {
-              // The user encountered a Plaid API error prior to exiting.
-            }
-            // metadata contains information about the institution
-            // that the user selected and the most recent API request IDs.
-            // Storing this information can be helpful for support.
-            self.onExit(err, metadata);
-          },
-          onEvent: function (eventName, metadata) {
-            // Optionally capture Link flow events, streamed through
-            // this callback as your users connect an Item to Plaid.
-            // For example:
-            // eventName = "TRANSITION_VIEW"
-            // metadata  = {
-            //   link_session_id: "123-abc",
-            //   mfa_type:        "questions",
-            //   timestamp:       "2017-09-14T14:42:19.350Z",
-            //   view_name:       "MFA",
-            // }
-            self.onEvent(eventName, metadata);
-          },
-        });
-        this.linkHandler.open();
-      }
-    },
+const props = defineProps({
+  clientName: String,
+  env: {
+    type: String,
+    required: true,
+    default: 'development',
+    validator: (value) =>
+      ['sandbox', 'development', 'production'].includes(value),
   },
-  mounted() {
-    // Only download the script if not already done
-    if (window.Plaid) {
-      this.plaid = window.Plaid;
-      return;
-    }
+  link_token: String,
+  public_key: String,
+  products: Array,
+  webhook: String,
+  onLoad: Function,
+  onEvent: Function,
+  onSuccess: Function,
+  onExit: Function,
+  receivedRedirectUri: String,
+});
 
-    let linkScript = document.createElement('script');
-    linkScript.async = true;
-    linkScript.setAttribute(
-      'src',
-      'https://cdn.plaid.com/link/v2/stable/link-initialize.js'
-    );
-    document.head.appendChild(linkScript);
+const plaidLink = ref(null);
+const linkHandler = ref(null);
 
-    linkScript.onload = () => {
-      this.plaid = window.Plaid;
-    };
-  },
-};
+function link_open(e) {
+  e.preventDefault();
+
+  if (plaidLink.value != null) {
+    // destroy link handler to prevent stacking of iframes
+    linkHandler.value?.destroy();
+    linkHandler.value = null;
+
+    linkHandler.value = plaidLink.value.create({
+      clientName: props.clientName,
+      env: props.env,
+      key: props.public_key,
+      product: props.products,
+      receivedRedirectUri: props.receivedRedirectUri,
+      token: props.link_token,
+      webhook: props.webhook,
+      onLoad: () => props.onLoad(),
+      onSuccess: (public_token, metadata) =>
+        props.onSuccess(public_token, metadata),
+      onExit: (err, metadata) => props.onExit(err, metadata),
+      onEvent: (eventName, metadata) => props.onEvent(eventName, metadata),
+    });
+
+    linkHandler.value.open();
+  }
+}
+
+onMounted(() => {
+  if (window.Plaid) {
+    plaidLink.value = window.Plaid;
+    return;
+  }
+
+  const linkScript = document.createElement('script');
+  linkScript.async = true;
+  linkScript.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
+  document.head.appendChild(linkScript);
+
+  linkScript.onload = () => (plaidLink.value = window.Plaid);
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

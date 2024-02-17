@@ -3,7 +3,7 @@ import config from 'src/config';
 import { Configuration, PlaidApi, PlaidEnvironments } from 'plaid';
 
 const configuration = new Configuration({
-  basePath: PlaidEnvironments.sandbox,
+  basePath: PlaidEnvironments.development,
   baseOptions: {
     headers: {
       'PLAID-CLIENT-ID': config.plaid.client_id,
@@ -12,6 +12,6 @@ const configuration = new Configuration({
   },
 });
 
-const client = new PlaidApi(configuration);
+const plaid = new PlaidApi(configuration);
 
-export default client;
+export { plaid };
