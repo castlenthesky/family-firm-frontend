@@ -6,38 +6,35 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '',
-        component: () => import('pages/IndexPage.vue'),
-        meta: {
-          is_nav: true,
-          caption: 'Home',
-          icon: 'home',
-          separator: true,
-          requiresAuth: true,
+        path: '/',
+        components: {
+          default: () => import('pages/auth/AuthLogin.vue'),
+          navContent: () => import('pages/auth/AuthRegister.vue'),
         },
+        meta: { requiresAuth: true },
       },
       {
-        path: '/families',
-        component: () => import('pages/families/FamiliesHome.vue'),
-        meta: {
-          is_nav: true,
-          requiresAuth: true,
-          caption: 'Families',
-          icon: 'family',
-          separator: false,
+        path: '/brian',
+        components: {
+          default: () => import('pages/users/UserpageBrian.vue'),
+          navContent: () => import('pages/users/UserNavBrian.vue'),
         },
+        // meta: { requiresAuth: true },
       },
       // Members Area
       {
-        path: '/members',
-        component: () => import('pages/family_members/MembersMain.vue'),
-        meta: { requiresAuth: true },
+        path: '/lin',
+        components: {
+          default: () => import('pages/users/UserpageLin.vue'),
+          navContent: () => import('pages/users/UserNavLin.vue'),
+        },
+        // meta: { requiresAuth: true },
       },
-      {
-        path: '/finances',
-        component: () => import('pages/finances/FamilyBudget.vue'),
-        meta: { requiresAuth: true },
-      },
+      // {
+      //   path: '/finances',
+      //   component: () => import('pages/finances/FamilyBudget.vue'),
+      //   meta: { requiresAuth: true },
+      // },
 
       // Auth Routes
       {
@@ -48,22 +45,6 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/register',
         component: () => import('pages/auth/AuthRegister.vue'),
-      },
-    ],
-  },
-  // ######### Admin Routes #########
-  {
-    path: '/admin',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('pages/admin/AdminUsers.vue'),
-        meta: {
-          icon: 'home',
-          separator: true,
-          requiresAuth: true,
-        },
       },
     ],
   },
