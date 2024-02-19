@@ -1,20 +1,24 @@
 <template>
   <router-link :to="link">
-    <li class="squircle green-boi">
-      <slot name="icon" class="server-image">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          height="24"
-          viewBox="0 -960 960 960"
-          width="24"
-        >
-          <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-        </svg>
-      </slot>
-      <div class="tooltip-container">
-        <h4 class="tooltip-text">{{ tooltip }}</h4>
+    <div class="squircle">
+      <div class="server-image">
+        <slot name="icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 -960 960 960"
+            width="24"
+          >
+            <path
+              d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
+            />
+          </svg>
+        </slot>
       </div>
-    </li>
+      <div class="tooltip">
+        <div class="tooltiptext">{{ props.tooltip }}</div>
+      </div>
+    </div>
   </router-link>
 </template>
 
@@ -22,103 +26,104 @@
 import { defineProps } from 'vue';
 
 const props = defineProps({
-  link: String,
-  colorClass: String,
+  link: {
+    type: String,
+    default: '/',
+  },
   tooltip: String,
+  backgroundColor: String,
 });
 </script>
 
-<style>
+<style lang="scss">
+:root {
+  --color-blurple: #7289da;
+  --color-fantastic-green: #00ae7a;
+  --color-full-white: #ffffff;
+  --color-grey-white: #b9bbbe;
+  --color-lighter-dark: #45494e;
+  --color-dark: #2c2f33;
+  --color-grey-dark: #242629;
+  --color-not-quite-black: #23272a;
+  --color-actually-black: #000000;
+}
+
+.server-image {
+  width: 24px;
+  height: 24px;
+  svg {
+    fill: white;
+  }
+}
+
 .squircle {
-  background: var(--color-lighter-dark);
+  background-color: var(--color-blurple);
   width: 48px;
   height: 48px;
   border-radius: 50%;
   cursor: pointer;
-  position: relative;
-  transition: border-radius 128ms, background 128ms, color 128ms;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.squircle:hover {
-  border-radius: 33%;
-}
-.squircle:hover::before {
-  transform: translate(-102%, -50%) scale(0.5);
-}
-.squircle::before {
-  content: '';
-  background: var(--color-full-white);
-  width: 100%;
-  height: 150%;
-  position: absolute;
-  border-radius: 33%;
-  top: 50%;
-  transform: translate(-100%, -50%) scale(0);
-  transition: transform 180ms;
-}
-.squircle:hover .tooltip-container {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
+  transition: border-radius 200ms, background 200ms, color 200ms;
+
+  &:hover {
+    border-radius: 33%;
+
+    & .tooltip .tooltiptext {
+      visibility: visible;
+    }
+    &::before {
+      transform: translate(-100%, -50%) scale(0.5);
+    }
+  }
+
+  &::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: var(--color-full-white);
+    position: absolute;
+    border-radius: 5px;
+    top: 50%;
+    transform: translate(-100%, -50%) scale(0);
+    transition: transform 200ms;
+  }
 }
 
-.purple-boi:hover {
-  background: var(--color-blurple);
-}
-
-.green-boi {
-  color: var(--color-fantastic-green);
-}
-.green-boi:hover {
-  background: var(--color-fantastic-green);
-  color: var(--color-full-white);
-}
-.green-boi:first-child {
-  width: inherit;
-  border-radius: inherit;
-}
-
-.tooltip-container {
-  background: var(--color-actually-black);
-  height: 70%;
-  padding: 0.68rem 1rem;
-  position: absolute;
-  top: 50%;
-  left: 125%;
-  transform-origin: left;
-  transform: translateY(-50%) scale(0.98);
-  max-width: 256px;
-  width: max-content;
-  border-radius: 4px;
-  opacity: 0;
-  transition: opacity 200ms, transform 128ms;
-  pointer-events: none;
-  color: var(--color-full-white);
-}
-
-.tooltip-container::before {
-  content: '';
-  background: var(--color-actually-black);
-  position: absolute;
-  left: -2px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-  width: 24px;
-  height: 24px;
-  z-index: -1;
-}
-
-.tooltip-text {
+.tooltip {
   position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0;
-  margin: 0;
-  font-size: 1em;
+  left: 60%;
 }
-.server-image {
-  width: inherit;
-  border-radius: inherit;
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  width: max-content;
+  height: 24px;
+  top: 50%;
+  font-size: 0.75rem;
+  position: absolute;
+  color: #fff;
+  text-align: left;
+  border-radius: 5px;
+  padding: 3px 10px;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 </style>

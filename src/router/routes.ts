@@ -11,7 +11,6 @@ const routes: RouteRecordRaw[] = [
           default: () => import('pages/auth/AuthLogin.vue'),
           navContent: () => import('pages/auth/AuthRegister.vue'),
         },
-        meta: { requiresAuth: true },
       },
       {
         path: '/brian',
