@@ -1,18 +1,31 @@
 <template>
   <div class="leftNavigation">
     <div class="leftNavigationPrimary">
-      <SquircleButton link="/" tooltip="Home">
+      <GuildButton link="/" tooltip="Home">
         <template #icon>
-          <img
-            src="https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/home/default/24px.svg"
-            alt=""
-          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 -960 960 960"
+            width="24"
+          >
+            <path
+              d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"
+            />
+          </svg>
         </template>
-      </SquircleButton>
+      </GuildButton>
       <div class="divider"></div>
-      <SquircleButton link="/brian" tooltip="Brian"></SquircleButton>
-      <SquircleButton link="/lin" tooltip="Lin"></SquircleButton>
-      <SquircleButton link="/melody" tooltip="Melody"></SquircleButton>
+      <GuildButton
+        v-for="guild in guilds"
+        :key="guild.name"
+        :link="guild.link"
+        :tooltip="guild.name"
+      >
+        <template #icon>
+          <img :src="guild.image" alt="" />
+        </template>
+      </GuildButton>
     </div>
     <div class="leftNavigationSecondary">
       <router-view name="navContent"></router-view>
@@ -21,7 +34,32 @@
 </template>
 
 <script setup lang="ts">
-import SquircleButton from 'src/components/navigation/SquircleButton.vue';
+import GuildButton from 'src/components/navigation/GuildButton.vue';
+import ChannelList from './ChannelList.vue';
+
+const guilds = [
+  {
+    name: 'Brian',
+    link: '/brian',
+    image: '/brian.jpg',
+    icon: 'someting',
+    tooltip: 'Brian',
+  },
+  {
+    name: 'Lin',
+    link: '/lin',
+    image: '/lin.jpg',
+    icon: 'someting',
+    tooltip: 'Lin',
+  },
+  {
+    name: 'Meloody',
+    link: '/melody',
+    image: '/melody.jpg',
+    icon: 'someting',
+    tooltip: 'Melody',
+  },
+];
 </script>
 
 <style lang="scss">

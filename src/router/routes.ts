@@ -18,6 +18,28 @@ const routes: RouteRecordRaw[] = [
           default: () => import('pages/users/UserpageBrian.vue'),
           navContent: () => import('pages/users/UserNavBrian.vue'),
         },
+        children: [
+          {
+            path: 'home',
+            component: () => import('pages/users/UserpageBrian.vue'),
+          },
+          {
+            path: 'physical',
+            component: () => import('pages/users/UserpageBrian.vue'),
+          },
+          {
+            path: 'social',
+            component: () => import('pages/users/UserpageBrian.vue'),
+          },
+          {
+            path: 'spiritual',
+            component: () => import('pages/users/UserpageBrian.vue'),
+          },
+          {
+            path: 'professional',
+            component: () => import('pages/users/UserpageBrian.vue'),
+          },
+        ],
         // meta: { requiresAuth: true },
       },
       // Members Area

@@ -1,9 +1,9 @@
 <template>
-  <SquircleButton to="/brian" tooltip="Brian"></SquircleButton>
-  <SquircleButton to="/lin" tooltip="Lin"></SquircleButton>
-  <SquircleButton to="/melody" tooltip="Melody"></SquircleButton>
+  <GuildButton to="/brian" tooltip="Brian"></GuildButton>
+  <GuildButton to="/lin" tooltip="Lin"></GuildButton>
+  <GuildButton to="/melody" tooltip="Melody"></GuildButton>
 </template>
 
 <script setup lang="ts">
-import SquircleButton from 'src/components/navigation/SquircleButton.vue';
+import GuildButton from 'src/components/navigation/GuildButton.vue';
 </script>

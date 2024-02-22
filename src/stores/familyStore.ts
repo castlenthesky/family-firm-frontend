@@ -1,6 +1,10 @@
 import { computed, ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { getfamilyById, getUserFamilies } from 'src/services/families';
+import {
+  getfamilyById,
+  getUserFamilies,
+  getFamilyMembers,
+} from 'src/services/families';
 import { DocumentData } from 'firebase/firestore';
 
 export const useFamilyStore = defineStore('family', () => {
@@ -35,6 +39,14 @@ export const useFamilyStore = defineStore('family', () => {
       id: familyData.id,
       ...familyData.data(),
     };
+    console.log('getting family member data');
+    getActiveFamilyMembers(familyId);
+  }
+
+  async function getActiveFamilyMembers(familyId: string) {
+    const familyMemberData = await getFamilyMembers(familyId);
+    console.log(familyMemberData.docs);
+    family.value.members = familyMemberData.docs;
   }
 
   // async function setActiveFamily(family)

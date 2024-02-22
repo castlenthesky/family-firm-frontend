@@ -51,7 +51,7 @@ import { useAuthStore } from 'src/stores';
 
 const authStore = useAuthStore();
 
-const leftDrawerOpen = ref(false);
+const leftDrawerOpen = ref(true);
 const rightDrawerOpen = ref(false);
 
 function toggleLeftDrawer() {

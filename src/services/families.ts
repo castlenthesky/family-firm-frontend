@@ -53,3 +53,7 @@ export async function createFamily(family: {
 export async function getfamilyById(familyId: string) {
   return await getDoc(doc(collection(db, 'families'), familyId));
 }
+
+export async function getFamilyMembers(familyId: string) {
+  return await getDocs(collection(db, `families/${familyId}/members`));
+}

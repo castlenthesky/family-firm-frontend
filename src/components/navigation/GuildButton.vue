@@ -1,20 +1,16 @@
 <template>
   <router-link :to="link">
     <div class="squircle">
-      <div class="server-image">
-        <slot name="icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24"
-            viewBox="0 -960 960 960"
-            width="24"
-          >
-            <path
-              d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
-            />
-          </svg>
-        </slot>
-      </div>
+      <slot name="icon" class="server-image">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          viewBox="0 -960 960 960"
+          width="24"
+        >
+          <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+        </svg>
+      </slot>
       <div class="tooltip">
         <div class="tooltiptext">{{ props.tooltip }}</div>
       </div>
@@ -23,8 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-
 const props = defineProps({
   link: {
     type: String,
@@ -46,14 +40,6 @@ const props = defineProps({
   --color-grey-dark: #242629;
   --color-not-quite-black: #23272a;
   --color-actually-black: #000000;
-}
-
-.server-image {
-  width: 24px;
-  height: 24px;
-  svg {
-    fill: white;
-  }
 }
 
 .squircle {
@@ -88,6 +74,25 @@ const props = defineProps({
     top: 50%;
     transform: translate(-100%, -50%) scale(0);
     transition: transform 200ms;
+  }
+
+  & img[src$='.jpg'] {
+    position: relative;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+  }
+  & img[src$='.png'] {
+    position: relative;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    fill: white;
+  }
+  & svg {
+    position: relative;
+    border-radius: inherit;
+    fill: white;
   }
 }
 
